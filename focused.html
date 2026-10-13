@@ -1,0 +1,3656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0E1D42">
+  <title>RE:SET — The Focused One: Sequence Memory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #152B4A;
+  --navy-light: #1E3A5F;
+  --teal: #2ECDA6;
+  --teal-dark: #24A888;
+  --orange: #E87830;
+  --yellow: #FFCA28;
+  --blue: #2196F3;
+  --green: #00C853;
+  --red: #e53935;
+  --bg: #FFFFFF;
+  --white: #FFFFFF;
+  --text-primary: #152B4A;
+  --text-secondary: rgba(21,43,74,0.5);
+  --border-light: rgba(21,43,74,0.1);
+  --border-med: rgba(21,43,74,0.16);
+  --shadow-sm: 0 1px 3px rgba(21,43,74,0.06), 0 1px 2px rgba(21,43,74,0.04);
+  --shadow-md: 0 4px 16px rgba(21,43,74,0.08), 0 2px 6px rgba(21,43,74,0.04);
+  --shadow-lg: 0 12px 40px rgba(21,43,74,0.1), 0 4px 12px rgba(21,43,74,0.06);
+  --shadow-teal: 0 4px 20px rgba(46,205,166,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter','Space Grotesk',sans-serif;
+  background: #fff;
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M4,2 L4,24 L9,19 L14,28 L18,26 L13,17 L22,17 Z' fill='%23FFCA28' stroke='%23152B4A' stroke-width='2' stroke-linejoin='miter'/%3E%3C/svg%3E") 4 2, auto;
+}
+a, button, .char-card, [onclick] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M4,2 L4,24 L9,19 L14,28 L18,26 L13,17 L22,17 Z' fill='%23FFCA28' stroke='%23152B4A' stroke-width='2.5' stroke-linejoin='miter'/%3E%3C/svg%3E") 4 2, pointer;
+}
+
+/* ===== GRID BACKGROUND ===== */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='70' height='70' fill='none'/%3E%3Cline x1='70' y1='0' x2='70' y2='70' stroke='rgba(33,150,243,0.18)' stroke-width='1'/%3E%3Cline x1='0' y1='70' x2='70' y2='70' stroke='rgba(33,150,243,0.18)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 70px 70px;
+}
+
+/* ===== PIXEL DECOR ===== */
+.pixel-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.pix { position: absolute; border-radius: 1px; opacity: 0; animation: pixFloat 20s ease-in-out infinite; }
+@keyframes pixFloat {
+  0%,100% { opacity:0; transform:translateY(0) rotate(0deg); }
+  15% { opacity:.45; } 50% { opacity:.35; transform:translateY(-30px) rotate(45deg); } 85% { opacity:.45; }
+}
+
+/* ===== SCREENS ===== */
+.screen { display:none !important; flex-direction:column; align-items:center; min-height:100vh; width:100%; position:relative; z-index:1; }
+.screen.active { display:flex !important; }
+.screen.fade-in { animation: screenIn .35s ease forwards; }
+@keyframes screenIn { from{opacity:0} to{opacity:1} }
+
+/* ===== ANIM HELPERS ===== */
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== TRANSITION OVERLAY ===== */
+.transition-overlay { position:fixed;inset:0;z-index:100;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s ease; }
+.transition-overlay.active { opacity:1;pointer-events:all; }
+.t-spinner { width:40px;height:40px;border:3px solid var(--border-light);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ===== WELCOME SCREEN ===== */
+#welcome-screen { justify-content:center;align-items:center;padding:40px 24px;text-align:center; }
+.welcome-container { display:flex;flex-direction:column;align-items:center;max-width:560px; }
+.welcome-logo { margin-bottom:40px;animation:wlEnter 1s cubic-bezier(.22,1,.36,1) forwards; }
+.welcome-logo img { height:clamp(100px,20vw,160px);width:auto;filter:drop-shadow(0 4px 12px rgba(21,43,74,.08)); }
+@keyframes wlEnter { from{opacity:0;transform:scale(.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.welcome-title { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:700;letter-spacing:3px;color:var(--navy);margin-bottom:14px;animation:fadeUp .7s ease .3s both; }
+.welcome-subtitle { font-size:clamp(.95rem,2vw,1.1rem);color:var(--text-secondary);line-height:1.7;margin-bottom:48px;animation:fadeUp .7s ease .5s both; }
+.btn-enter { display:inline-flex;align-items:center;padding:16px 52px;font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#fff;background:var(--navy);border:2px solid var(--navy);border-radius:6px;transition:all .3s ease;animation:fadeUp .7s ease .7s both; }
+.btn-enter:hover { background:transparent;color:var(--navy);box-shadow:var(--shadow-md); }
+.btn-enter:active { transform:scale(.97); }
+.corner-decor { position:absolute;z-index:0;opacity:.12; }
+.corner-decor.tl{top:30px;left:30px} .corner-decor.tr{top:30px;right:30px}
+.corner-decor.bl{bottom:30px;left:30px} .corner-decor.br{bottom:30px;right:30px}
+
+/* ===== SELECTION SCREEN ===== */
+#selection-screen { padding-bottom:60px; }
+.sel-header { text-align:center;padding:40px 20px 8px;animation:fadeUp .6s ease forwards; }
+.sel-logo { margin-bottom:8px; }
+.sel-logo img { height:90px;width:auto;filter:drop-shadow(0 2px 8px rgba(21,43,74,.06));transition:transform .3s ease; }
+.sel-logo:hover img { transform:scale(1.04); }
+.sel-tagline { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;letter-spacing:2px;color:var(--navy);margin-bottom:8px;animation:fadeUp .6s ease .15s both; }
+.sel-subtitle { font-size:clamp(.9rem,1.8vw,1rem);color:var(--text-secondary);letter-spacing:.5px;animation:fadeUp .6s ease .25s both; }
+.divider { width:50px;height:3px;background:var(--teal);margin:20px auto 0;border-radius:2px;animation:fadeUp .6s ease .35s both; }
+.characters-section { width:100%;max-width:1100px;padding:28px 24px 20px;margin:0 auto;animation:fadeUp .6s ease .4s both; }
+.characters-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:22px; }
+.char-card { position:relative;background:#fff;border:2px solid var(--border-light);border-radius:14px;padding:28px 14px 22px;display:flex;flex-direction:column;align-items:center;transition:all .35s cubic-bezier(.25,.8,.25,1);box-shadow:var(--shadow-sm); }
+.char-card:hover { transform:translateY(-8px);border-color:var(--teal);box-shadow:var(--shadow-lg),0 0 0 1px var(--teal); }
+.char-card.selected { transform:translateY(-8px);border-color:var(--navy);box-shadow:var(--shadow-lg),0 0 0 2px var(--navy); }
+.char-select-arrow { position:absolute;top:12px;right:12px;width:26px;height:30px;opacity:0;transform:scale(.5) rotate(-10deg);transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:3;filter:drop-shadow(0 2px 4px rgba(21,43,74,.15)); }
+.char-card.selected .char-select-arrow { opacity:1;transform:scale(1) rotate(0deg); }
+.char-top-accent { position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:3px;border-radius:0 0 3px 3px;transition:width .4s ease; }
+.char-card:hover .char-top-accent,.char-card.selected .char-top-accent { width:60%; }
+.char-img-wrap { position:relative;width:100%;height:210px;display:flex;align-items:center;justify-content:center;margin-bottom:14px; }
+.char-img-wrap img { max-height:195px;max-width:100%;width:auto;object-fit:contain;image-rendering:auto;transition:transform .4s cubic-bezier(.25,.8,.25,1);filter:drop-shadow(0 4px 12px rgba(21,43,74,.1)); }
+.char-card:hover .char-img-wrap img,.char-card.selected .char-img-wrap img { transform:scale(1.06) translateY(-4px); }
+.char-name { font-family:'Space Grotesk',sans-serif;font-size:clamp(.78rem,1.3vw,.95rem);font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--navy);transition:color .3s ease; }
+.char-card:hover .char-name { color:var(--teal-dark); }
+.char-underline { width:24px;height:2px;margin-top:10px;border-radius:2px;transition:width .4s ease; }
+.char-card:hover .char-underline,.char-card.selected .char-underline { width:40px; }
+.selection-panel { width:100%;max-width:680px;margin:0 auto;padding:0 24px 20px;opacity:0;transform:translateY(24px);transition:all .45s cubic-bezier(.25,.8,.25,1);pointer-events:none; }
+.selection-panel.visible { opacity:1;transform:translateY(0);pointer-events:all; }
+.sel-inner { background:#fff;border:2px solid var(--border-med);border-radius:14px;padding:32px 36px;display:flex;align-items:center;gap:28px;box-shadow:var(--shadow-md);position:relative; }
+.sel-char-img { flex-shrink:0; }
+.sel-char-img img { height:130px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(21,43,74,.1));animation:selBounce .45s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes selBounce { from{opacity:0;transform:scale(.7) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.sel-info { flex:1; }
+.sel-name { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.1rem,2.2vw,1.45rem);font-weight:700;letter-spacing:2px;color:var(--navy);margin-bottom:8px; }
+.sel-desc { font-size:clamp(.85rem,1.5vw,.92rem);color:var(--text-secondary);line-height:1.65;margin-bottom:20px; }
+.btn-start { display:inline-flex;align-items:center;gap:12px;padding:13px 32px;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff;background:var(--teal);border:2px solid var(--teal);border-radius:6px;transition:all .3s ease; }
+.btn-start:hover { background:var(--teal-dark);border-color:var(--teal-dark);box-shadow:var(--shadow-teal); }
+.btn-start:active { transform:scale(.97); }
+.btn-start .arrow { display:inline-block;transition:transform .3s ease;font-size:1.1rem; }
+.btn-start:hover .arrow { transform:translateX(4px); }
+
+/* ===== COMING SOON ===== */
+#coming-soon-screen { justify-content:center;align-items:center;padding:40px 24px;text-align:center; }
+.cs-container { max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center; }
+.cs-char-img { margin-bottom:36px;animation:csIn .7s cubic-bezier(.34,1.56,.64,1) .3s both; }
+.cs-char-img img { height:clamp(150px,28vw,220px);width:auto;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(21,43,74,.12)); }
+@keyframes csIn { from{opacity:0;transform:scale(.6) translateY(30px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.cs-badge { display:inline-flex;align-items:center;gap:10px;padding:8px 20px;border-radius:50px;background:#fff;border:1.5px solid var(--border-light);margin-bottom:24px;box-shadow:var(--shadow-sm);animation:fadeUp .5s ease .5s both; }
+.cs-dot { width:8px;height:8px;border-radius:50%;background:var(--teal);animation:dotP 1.5s ease infinite; }
+@keyframes dotP { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,205,166,.4)} 50%{opacity:.5;box-shadow:0 0 0 6px rgba(46,205,166,0)} }
+.cs-badge-text { font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--navy); }
+.cs-title { font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:700;letter-spacing:4px;color:var(--navy);margin-bottom:14px;animation:fadeUp .6s ease .7s both; }
+.cs-subtitle { font-size:clamp(.92rem,2vw,1.05rem);color:var(--text-secondary);line-height:1.7;max-width:400px;margin-bottom:36px;animation:fadeUp .6s ease .9s both; }
+.cs-progress-wrap { width:100%;max-width:300px;margin-bottom:36px;animation:fadeUp .6s ease 1s both; }
+.cs-progress-track { width:100%;height:4px;border-radius:4px;background:var(--border-light);overflow:hidden; }
+.cs-progress-bar { height:100%;width:0%;border-radius:4px;background:var(--teal);animation:pFill 2.5s ease 1.3s forwards; }
+@keyframes pFill { 0%{width:0%} 60%{width:72%} 80%{width:80%} 100%{width:88%} }
+.btn-back { display:inline-flex;align-items:center;gap:10px;padding:12px 28px;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);background:#fff;border:1.5px solid var(--border-light);border-radius:6px;transition:all .3s ease;animation:fadeUp .6s ease 1.1s both; }
+.btn-back:hover { color:var(--navy);border-color:var(--navy);box-shadow:var(--shadow-sm); }
+.btn-back .arrow-back { transition:transform .3s ease; }
+.btn-back:hover .arrow-back { transform:translateX(-4px); }
+
+/* ===================================================
+   GAME SCREENS — THE OVERTHINKER
+   =================================================== */
+
+/* Prevent any horizontal overflow */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+/* Shared game buttons — 48px min-height for mobile touch accessibility */
+.gbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
+.gbtn:active { transform: scale(0.97); }
+.gbtn-navy { background: #0E1D42; color: #fff; border-color: #0E1D42; }
+.gbtn-navy:hover { background: transparent; color: #0E1D42; }
+.gbtn-teal { background: var(--teal); color: #0E1D42; border-color: var(--teal); }
+.gbtn-teal:hover { background: var(--teal-dark); border-color: var(--teal-dark); box-shadow: var(--shadow-teal); }
+.gbtn-outline { background: transparent; color: #0E1D42; border-color: var(--border-med); }
+.gbtn-outline:hover { border-color: #0E1D42; box-shadow: var(--shadow-sm); }
+
+/* ===== INSTRUCTIONS SCREEN ===== */
+#game-instructions-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(16px, 4vw, 36px) clamp(12px, 3vw, 20px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+.instr-wrap {
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.6s ease both;
+  box-sizing: border-box;
+}
+.instr-header {
+  background: #0E1D42;
+  padding: clamp(20px, 4vw, 28px) clamp(20px, 5vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+}
+.instr-logo img {
+  height: clamp(30px, 6vw, 38px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 8px;
+}
+.instr-char img {
+  height: clamp(75px, 16vw, 96px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,.35));
+}
+.instr-title-block { flex: 1; min-width: 0; }
+.instr-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+.instr-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 4.5vw, 2.2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+.instr-hook { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: rgba(255,255,255,.7); font-style: italic; }
+.instr-body { padding: clamp(20px, 4vw, 32px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.instr-desc { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: var(--text-secondary); line-height: 1.65; margin-bottom: 22px; border-left: 3px solid var(--teal); padding-left: 14px; }
+.instr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+.instr-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 14px; }
+.instr-card-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
+.instr-card-value { font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700; color: #0E1D42; line-height: 1.4; }
+.instr-levels { display: flex; gap: 10px; margin-bottom: 26px; }
+.instr-lvl { flex: 1; padding: 12px 10px; border-radius: 8px; text-align: center; border: 1.5px solid var(--border-light); background: #fff; }
+.instr-lvl-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+.instr-lvl-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700; color: #0E1D42; }
+.instr-lvl-time { font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
+.instr-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+
+/* ===== GAME SCREEN ===== */
+#game-screen {
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: 100vh;
+  background: #fff;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+.game-topbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 2px solid var(--border-light);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  box-sizing: border-box;
+}
+.gtb-logo img {
+  height: clamp(26px, 5vw, 34px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.gtb-center { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gtb-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: #0E1D42; padding: 5px 12px; border-radius: 4px; }
+.hud-attempt-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; background: rgba(14,29,66,.08); border: 1.5px solid var(--border-med); padding: 4px 10px; border-radius: 4px; transition: all 0.3s ease; }
+.hud-attempt-badge.second-attempt { color: var(--orange); background: rgba(232,120,48,.12); border-color: var(--orange); }
+.gtb-right { display: flex; align-items: center; gap: 16px; }
+.hud-timer { display: flex; align-items: center; gap: 6px; }
+.hud-t-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.hud-t-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; color: #0E1D42; min-width: 36px; text-align: right; transition: color 0.3s ease; }
+.hud-t-val.danger { color: var(--red); animation: tPulse 0.5s ease infinite alternate; }
+@keyframes tPulse { from{opacity:1} to{opacity:0.45} }
+.hud-meter { display: flex; align-items: center; gap: 6px; }
+.hud-m-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.hud-m-track { width: 75px; height: 7px; border-radius: 4px; background: var(--border-light); overflow: hidden; }
+.hud-m-fill { height: 100%; width: 0%; border-radius: 4px; background: var(--teal); transition: width 0.4s ease, background 0.4s ease; }
+.hud-m-fill.warn { background: var(--orange); }
+.hud-m-fill.crit { background: var(--red); }
+.hud-m-pct { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; color: #0E1D42; min-width: 32px; }
+
+/* Canvas container — touch-action: none prevents scrolling while swiping */
+.game-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#game-canvas {
+  display: block;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Flash overlay & Toast */
+.game-flash { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
+.game-flash.show { opacity: 1; }
+#penalty-toast { position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-16px); background: #0E1D42; color: #fff; padding: 9px 20px; border-radius: 6px; font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; z-index: 60; opacity: 0; pointer-events: none; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
+#penalty-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#penalty-toast.warn { background: var(--orange); }
+#penalty-toast.danger { background: var(--red); }
+.mobile-controls { display: none !important; }
+
+/* ===== LEVEL COMPLETE ===== */
+#level-complete-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px);
+  text-align: center;
+  box-sizing: border-box;
+}
+.lc-wrap {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.lc-head {
+  background: #0E1D42;
+  padding: clamp(20px, 4vw, 26px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+.lc-logo img {
+  height: clamp(30px, 7vw, 40px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.lc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lc-check { width: 38px; height: 38px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; color: #0E1D42; font-weight: 700; }
+.lc-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.2rem, 3.8vw, 1.7rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; line-height: 1.2; }
+.lc-body { padding: clamp(20px, 4vw, 28px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.lc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.lc-stat { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 14px; text-align: left; }
+.lc-stat-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 3px; }
+.lc-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: #0E1D42; }
+.lc-attempt-tag { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; background: rgba(46,205,166,.15); border: 1px solid var(--teal); border-radius: 6px; padding: 6px 14px; margin-bottom: 18px; }
+.lc-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+/* ===== GAME OVER ===== */
+#game-over-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px);
+  text-align: center;
+  box-sizing: border-box;
+}
+.go-wrap {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.go-head {
+  background: #0E1D42;
+  padding: clamp(22px, 4vw, 28px) clamp(20px, 5vw, 36px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.go-logo img {
+  height: clamp(30px, 7vw, 40px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 8px;
+}
+.go-icon { font-size: 2.2rem; margin-bottom: 8px; }
+.go-badge { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); background: rgba(232,120,48,.18); border: 1px solid var(--orange); padding: 4px 14px; border-radius: 20px; margin-bottom: 10px; }
+.go-badge.danger { color: #ff5252; background: rgba(229,57,53,.2); border-color: #ff5252; }
+.go-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.3rem, 4vw, 1.9rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+.go-sub { font-size: clamp(0.82rem, 2.5vw, 0.88rem); color: rgba(255,255,255,.7); line-height: 1.55; }
+.go-body { padding: clamp(20px, 4vw, 28px) clamp(18px, 4vw, 32px); box-sizing: border-box; }
+.go-attempt-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; text-align: center; }
+.go-attempt-msg { font-size: clamp(0.85rem, 2.5vw, 0.9rem); color: #0E1D42; line-height: 1.55; font-weight: 500; }
+.go-m-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 7px; text-align: left; }
+.go-m-bar { width: 100%; height: 7px; border-radius: 4px; background: var(--border-light); overflow: hidden; margin-bottom: 22px; }
+.go-m-fill { height: 100%; border-radius: 4px; background: var(--red); transition: width 0.8s cubic-bezier(.25,.8,.25,1); }
+.go-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* ===== FINAL RESULTS ===== */
+#final-score-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px) 60px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.fs-wrap {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.fs-head {
+  background: #0E1D42;
+  padding: clamp(24px, 4vw, 30px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.fs-logo img {
+  height: clamp(40px, 9vw, 56px);
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+}
+.fs-super { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
+.fs-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; line-height: 1.25; }
+.fs-body { padding: clamp(22px, 4vw, 32px) clamp(18px, 4vw, 36px) clamp(26px, 4vw, 36px); box-sizing: border-box; }
+.fs-char-img { margin-bottom: 16px; }
+.fs-char-img img { height: clamp(90px, 18vw, 120px); width: auto; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(14,29,66,.12)); }
+
+/* Dual Score Cards */
+.fs-dual-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.fs-score-card { background: #f8f9fb; border: 2px solid var(--border-light); border-radius: 14px; padding: clamp(14px, 3vw, 18px) clamp(12px, 3vw, 16px); text-align: left; display: flex; flex-direction: column; }
+.fs-score-card.fs-score-ot { border-color: rgba(33,150,243,.35); background: linear-gradient(180deg,#ffffff 0%,rgba(33,150,243,.04) 100%); }
+.fs-score-card.fs-score-fc { border-color: rgba(46,205,166,.35); background: linear-gradient(180deg,#ffffff 0%,rgba(46,205,166,.04) 100%); }
+.fs-score-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+.fs-score-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.fs-score-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.badge-ot-low { background: rgba(46,205,166,.18); color: var(--teal-dark); border: 1px solid var(--teal); }
+.badge-ot-mod { background: rgba(232,120,48,.18); color: var(--orange); border: 1px solid var(--orange); }
+.badge-ot-high { background: rgba(229,57,53,.18); color: var(--red); border: 1px solid var(--red); }
+.badge-fc-high { background: rgba(46,205,166,.18); color: var(--teal-dark); border: 1px solid var(--teal); }
+.badge-fc-med { background: rgba(33,150,243,.18); color: var(--blue); border: 1px solid var(--blue); }
+.fs-score-card .fs-score-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #0E1D42; margin-bottom: 4px; }
+.fs-score-card .fs-score-num { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.8rem, 4.5vw, 2.5rem); font-weight: 700; color: #0E1D42; line-height: 1.1; margin-bottom: 8px; }
+.fs-score-out { font-size: 1rem; color: var(--text-secondary); font-weight: 500; }
+.fs-score-bar-wrap { width: 100%; height: 6px; border-radius: 3px; background: var(--border-light); overflow: hidden; margin-bottom: 8px; }
+.fs-score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.fs-score-ot .fs-score-bar-fill { background: linear-gradient(90deg,var(--teal),var(--orange),var(--red)); }
+.fs-score-fc .fs-score-bar-fill { background: linear-gradient(90deg,var(--blue),var(--teal)); }
+.fs-score-hint { font-size: 0.73rem; color: var(--text-secondary); line-height: 1.35; }
+
+/* Results Narrative */
+.fs-message-card { background: #fff; border: 1.5px solid var(--border-light); border-radius: 12px; padding: clamp(14px, 3vw, 18px) clamp(14px, 3vw, 20px); margin-bottom: 18px; text-align: left; }
+.fs-message { font-size: clamp(0.88rem, 2.5vw, 0.95rem); color: #0E1D42; line-height: 1.6; margin-bottom: 10px; font-weight: 500; }
+.fs-quote { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: var(--text-secondary); line-height: 1.6; font-style: italic; border-left: 3px solid var(--teal); padding-left: 12px; }
+.fs-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+.fs-stat { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 8px; padding: 10px 6px; text-align: center; }
+.fs-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: #0E1D42; }
+.fs-stat-lbl { font-size: 0.58rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); margin-top: 2px; }
+.fs-disclaimer { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px; font-style: italic; text-align: center; }
+.fs-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== OVERTHINKING GUIDANCE SCREEN ===== */
+#guidance-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px) 60px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.guide-wrap {
+  width: 100%;
+  max-width: 820px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  text-align: left;
+  box-sizing: border-box;
+}
+.guide-head {
+  background: #0E1D42;
+  padding: clamp(24px, 4vw, 32px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.guide-logo img {
+  height: clamp(38px, 8vw, 50px);
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+}
+.guide-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+.guide-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 8px; line-height: 1.25; }
+.guide-sub { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: rgba(255,255,255,.7); line-height: 1.6; max-width: 580px; }
+.guide-body { padding: clamp(22px, 4vw, 34px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.guide-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 22px; }
+.guide-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 12px; padding: clamp(14px, 3vw, 18px) clamp(14px, 3vw, 20px); transition: transform 0.25s ease, border-color 0.25s ease; box-sizing: border-box; }
+.guide-card:hover { transform: translateY(-2px); border-color: var(--teal); }
+.guide-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: var(--teal); margin-bottom: 6px; }
+.guide-card-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(0.85rem, 2.5vw, 0.92rem); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; margin-bottom: 6px; line-height: 1.35; }
+.guide-card-text { font-size: clamp(0.82rem, 2.3vw, 0.88rem); color: var(--text-secondary); line-height: 1.6; }
+.guide-statement { background: linear-gradient(135deg,rgba(46,205,166,.1),rgba(33,150,243,.1)); border: 1.5px solid var(--teal); border-radius: 12px; padding: clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px); margin-bottom: 26px; display: flex; align-items: center; gap: 14px; box-sizing: border-box; }
+.guide-statement-icon { font-size: 1.6rem; color: var(--teal); flex-shrink: 0; }
+.guide-statement-text { font-size: clamp(0.88rem, 2.5vw, 0.98rem); font-style: italic; font-weight: 600; color: #0E1D42; line-height: 1.55; }
+.guide-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 1024px) {
+  .characters-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+
+@media (max-width: 768px) {
+  .game-topbar { padding: 8px 14px; }
+  .gtb-logo img { height: 28px; }
+  .gtb-badge { font-size: 0.65rem; padding: 4px 10px; }
+  .hud-attempt-badge { font-size: 0.65rem; padding: 3px 8px; }
+  .hud-t-val { font-size: 1.2rem; }
+  .hud-m-track { width: 65px; }
+}
+
+@media (max-width: 640px) {
+  .sel-header { padding: 26px 16px 6px; }
+  .sel-logo img { height: 48px; }
+  .characters-section { padding: 18px 12px 16px; }
+  .characters-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .char-card { padding: 16px 8px 14px; border-radius: 12px; }
+  .char-img-wrap { height: 125px; margin-bottom: 8px; }
+  .char-img-wrap img { max-height: 115px; }
+  .char-name { font-size: 0.66rem; letter-spacing: 1px; }
+  .char-underline { width: 16px; height: 2px; margin-top: 6px; }
+  .char-select-arrow { width: 18px; height: 22px; top: 6px; right: 6px; }
+  .selection-panel { padding: 0 12px 28px; }
+  .sel-inner { flex-direction: column; padding: 22px 18px; text-align: center; gap: 12px; }
+  .sel-char-img img { height: 95px; }
+  .btn-start { width: 100%; justify-content: center; min-height: 48px; }
+  .welcome-logo img { height: 80px; }
+  .btn-enter { padding: 14px 36px; font-size: 0.9rem; min-height: 48px; }
+  .corner-decor { display: none; }
+
+  /* Instructions Screen */
+  .instr-header { flex-direction: column; text-align: center; padding: 20px 16px; gap: 12px; }
+  .instr-body { padding: 20px 16px; }
+  .instr-grid { grid-template-columns: 1fr; gap: 10px; }
+  .instr-levels { flex-direction: column; gap: 8px; }
+  .instr-actions { flex-direction: column-reverse; width: 100%; gap: 10px; }
+  .instr-actions .gbtn { width: 100%; }
+
+  /* Level Complete Screen */
+  .lc-head { padding: 20px 16px; }
+  .lc-body { padding: 20px 16px; }
+  .lc-actions { flex-direction: column-reverse; width: 100%; gap: 10px; }
+  .lc-actions .gbtn { width: 100%; }
+
+  /* Game Over Screen */
+  .go-head { padding: 22px 16px; }
+  .go-body { padding: 20px 16px; }
+  .go-actions .gbtn { width: 100%; }
+
+  /* Final Results Screen */
+  .fs-head { padding: 24px 16px; }
+  .fs-body { padding: 20px 16px; }
+  .fs-dual-scores { grid-template-columns: 1fr; gap: 12px; }
+  .fs-breakdown { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .fs-actions { flex-direction: column; width: 100%; gap: 10px; }
+  .fs-actions .gbtn { width: 100%; }
+
+  /* Guidance Screen */
+  .guide-head { padding: 24px 16px; }
+  .guide-body { padding: 20px 16px; }
+  .guide-grid { grid-template-columns: 1fr; gap: 12px; }
+  .guide-actions { flex-direction: column; width: 100%; gap: 10px; }
+  .guide-actions .gbtn { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .game-canvas-wrap { padding: 6px; }
+  .game-topbar { padding: 8px 10px; gap: 6px; }
+  .gtb-logo img { height: 26px; }
+  .gtb-badge { font-size: 0.62rem; padding: 3px 8px; letter-spacing: 1px; }
+  .hud-attempt-badge { font-size: 0.62rem; padding: 3px 7px; }
+  .hud-t-lbl { font-size: 0.58rem; letter-spacing: 1px; }
+  .hud-t-val { font-size: 1.15rem; min-width: 28px; }
+  .hud-m-lbl { font-size: 0.58rem; letter-spacing: 1px; }
+  .hud-m-track { width: 50px; height: 6px; }
+  .hud-m-pct { font-size: 0.65rem; min-width: 26px; }
+}
+
+@media (max-width: 380px) {
+  .characters-grid { gap: 8px; }
+  .char-card { padding: 12px 6px 12px; }
+  .char-img-wrap { height: 100px; }
+  .char-img-wrap img { max-height: 95px; }
+  .char-name { font-size: 0.6rem; }
+  .lc-stats { grid-template-columns: 1fr; }
+}
+
+/* ===================================================
+   GAME SCREENS — THE DISTRACTED (FOCUS RUN)
+   =================================================== */
+
+/* Distracted instructions */
+#distracted-instructions-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(16px, 4vw, 36px) clamp(12px, 3vw, 20px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Distracted game screen */
+#distracted-game-screen {
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+
+.distracted-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#distracted-canvas {
+  display: block;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: calc(100vh - 75px);
+  box-sizing: border-box;
+}
+
+/* HUD Progress indicator */
+.hud-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-p-lbl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.hud-p-track {
+  width: 70px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--border-light);
+  overflow: hidden;
+}
+.hud-p-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: var(--teal);
+  transition: width 0.15s ease;
+}
+
+/* Flash overlay & Toast for Distracted */
+#distracted-flash {
+  position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; transition: opacity 0.15s ease;
+}
+#distracted-flash.show { opacity: 1; }
+#distracted-toast {
+  position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42; color: #fff; padding: 9px 20px; border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 1.5px; white-space: nowrap; z-index: 60; opacity: 0; pointer-events: none;
+  transition: all 0.3s ease; box-shadow: var(--shadow-md);
+}
+#distracted-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#distracted-toast.warn { background: var(--orange); }
+#distracted-toast.danger { background: var(--red); }
+
+/* Responsive adjustments for Distracted HUD */
+@media (max-width: 768px) {
+  .hud-progress-wrap { display: none; }
+}
+@media (max-width: 480px) {
+  .distracted-canvas-wrap { padding: 4px; }
+}
+
+
+/* ===================================================
+   SHARED DESIGN SYSTEM EXTENSIONS & GAME STYLES
+   =================================================== */
+
+/* Shared Button Variants */
+.gbtn-orange { background: var(--orange); color: #fff; border-color: var(--orange); }
+.gbtn-orange:hover { background: #D46622; border-color: #D46622; box-shadow: var(--shadow-orange); }
+.gbtn-green { background: var(--green); color: #fff; border-color: var(--green); }
+.gbtn-green:hover { background: #00A844; border-color: #00A844; box-shadow: var(--shadow-green); }
+
+/* Overthinker Mobile D-Pad Controls */
+.maze-dpad {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 6px auto 10px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 20;
+}
+@media (max-width: 768px) {
+  .maze-dpad { display: flex; }
+}
+.dpad-mid-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dpad-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #0E1D42;
+  color: #2ECDA6;
+  border: 2px solid var(--border-med);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.dpad-btn:active {
+  transform: scale(0.92);
+  background: var(--navy-light);
+  border-color: var(--teal);
+}
+.dpad-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(14,29,66,0.08);
+}
+
+/* Distracted Mobile Jump Dock & Button */
+.distracted-mobile-bar {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 16px 12px;
+  justify-content: center;
+  margin: 0 auto;
+  z-index: 20;
+}
+@media (max-width: 768px) {
+  .distracted-mobile-bar { display: flex; }
+}
+.distracted-jump-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  background: var(--teal);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 2px solid var(--teal-dark);
+  box-shadow: var(--shadow-md), var(--shadow-teal);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.distracted-jump-btn:active {
+  transform: scale(0.97);
+  background: var(--teal-dark);
+}
+
+/* Result Screen Tips Cards (HOW TO REDUCE OVERTHINKING & OTHERS) */
+.fs-tips-section {
+  width: 100%;
+  margin: 18px 0 20px;
+  text-align: left;
+}
+.fs-tips-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #0E1D42;
+  margin-bottom: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.fs-tips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .fs-tips-grid { grid-template-columns: 1fr; gap: 10px; }
+}
+.fs-tip-card {
+  background: #F8FAFC;
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.fs-tip-card:hover {
+  border-color: var(--teal);
+  transform: translateY(-2px);
+}
+.fs-tip-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: #0E1D42;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.fs-tip-text {
+  font-size: clamp(0.82rem, 1.8vw, 0.9rem);
+  color: #152B4A;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* ===================================================
+   PROCRASTINATOR: DEADLINE ROOM STYLES
+   =================================================== */
+#procrastinator-instructions-screen,
+#procrastinator-game-screen,
+#procrastinator-level-complete-screen,
+#procrastinator-game-over-screen,
+#procrastinator-final-score-screen,
+#procrastinator-guidance-screen {
+  width: 100%;
+}
+
+.procrastinator-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#procrastinator-canvas {
+  display: block;
+  background: #152B4A;
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.procrastinator-controls-dock {
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 16px 14px;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+.pg-drop-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border: 2px solid #D46622;
+  box-shadow: var(--shadow-md), var(--shadow-orange);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.pg-drop-btn:active {
+  transform: scale(0.97);
+  background: #D46622;
+}
+
+#procrastinator-toast {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+#procrastinator-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#procrastinator-toast.warn { background: var(--orange); }
+#procrastinator-toast.danger { background: var(--red); }
+#procrastinator-toast.teal { background: var(--teal); color: #0E1D42; }
+
+/* ===================================================
+   FOCUSED ONE: FOCUS GRID STYLES
+   =================================================== */
+#focused-instructions-screen,
+#focused-game-screen,
+#focused-level-complete-screen,
+#focused-game-over-screen,
+#focused-final-score-screen,
+#focused-guidance-screen {
+  width: 100%;
+}
+
+.focus-main-layout {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 12px 16px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media (max-width: 820px) {
+  .focus-main-layout {
+    flex-direction: column;
+    gap: 14px;
+    padding: 8px 12px;
+  }
+}
+
+.focus-char-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+  width: 180px;
+  flex-shrink: 0;
+}
+@media (max-width: 820px) {
+  .focus-char-sidebar {
+    display: none !important;
+  }
+}
+.focus-char-sidebar img {
+  height: 145px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(21,43,74,0.12));
+}
+.focus-char-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(0,200,83,0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.focus-center-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.focus-status-banner {
+  width: 100%;
+  max-width: 440px;
+  background: #0E1D42;
+  border-radius: 12px;
+  padding: 10px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.focus-status-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  transition: color 0.25s ease;
+}
+.focus-status-text.watching { color: var(--yellow); }
+.focus-status-text.ready { color: var(--teal); }
+.focus-status-text.success { color: var(--green); }
+
+.focus-grid-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 440px;
+  max-height: 440px;
+  padding: 12px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 480px) {
+  .focus-grid-wrap {
+    max-width: min(340px, 88vw);
+    max-height: min(340px, 88vw);
+    padding: 8px;
+  }
+}
+
+.focus-grid {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+@media (max-width: 480px) {
+  .focus-grid { gap: 6px; }
+}
+
+/* Level 1 (3x3 Grid) Optimized Aesthetic & Cell Usability */
+.focus-grid.rows-3 {
+  gap: 14px;
+}
+@media (max-width: 480px) {
+  .focus-grid.rows-3 { gap: 8px; }
+}
+.focus-grid.rows-3 .focus-cell {
+  border-radius: 14px;
+  background: linear-gradient(145deg, #152d56 0%, #0E1D42 100%);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+}
+.focus-grid.rows-3 .focus-cell:hover {
+  border-color: var(--teal);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(46, 205, 166, 0.22);
+}
+.focus-grid.rows-3 .f-cell-inner {
+  gap: 8px;
+}
+.focus-grid.rows-3 .f-cell-dot {
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
+}
+.focus-grid.rows-3 .f-cell-num {
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.focus-grid.input-disabled {
+  pointer-events: none;
+}
+.focus-grid.round-success-glow .focus-cell {
+  border-color: var(--green);
+  box-shadow: 0 0 16px rgba(0,200,83,0.35);
+}
+
+.focus-cell {
+  position: relative;
+  background: #0E1D42;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-sm);
+  outline: none;
+}
+.focus-cell:hover {
+  border-color: var(--teal);
+  transform: scale(1.02);
+}
+.focus-cell:active {
+  transform: scale(0.95);
+}
+.f-cell-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.f-cell-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.2s ease;
+}
+.f-cell-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.72rem, 1.8vw, 0.9rem);
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Active Highlight / Sequences */
+.focus-cell.lit {
+  background: var(--teal) !important;
+  border-color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 0 24px rgba(46, 205, 166, 0.7);
+}
+.focus-cell.lit .f-cell-dot {
+  background: #0E1D42;
+  transform: scale(1.4);
+}
+.focus-cell.lit .f-cell-num {
+  color: #0E1D42;
+  font-weight: 800;
+}
+
+.focus-cell.correct {
+  background: var(--green) !important;
+  border-color: #fff !important;
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(0, 200, 83, 0.6);
+}
+.focus-cell.correct .f-cell-dot { background: #fff; }
+.focus-cell.correct .f-cell-num { color: #fff; }
+
+.focus-cell.wrong {
+  background: var(--red) !important;
+  border-color: #fff !important;
+  animation: fShake 0.3s ease;
+  box-shadow: 0 0 20px rgba(229, 57, 53, 0.6);
+}
+@keyframes fShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.focus-cell.distraction-pulse {
+  border-color: var(--orange);
+  box-shadow: 0 0 14px rgba(232, 120, 48, 0.4);
+}
+
+/* Sequence step dots */
+.focus-step-dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.f-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-light);
+  border: 1.5px solid var(--border-med);
+  transition: all 0.25s ease;
+}
+.f-step-dot.filled {
+  background: var(--teal);
+  border-color: var(--teal-dark);
+  box-shadow: 0 0 8px rgba(46, 205, 166, 0.5);
+}
+.f-step-dot.active {
+  border-color: var(--teal);
+  transform: scale(1.3);
+}
+
+#focused-toast {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+#focused-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#focused-toast.warn { background: var(--orange); }
+#focused-toast.danger { background: var(--red); }
+#focused-toast.teal { background: var(--teal); color: #0E1D42; }
+
+/* Status meter extra classes */
+.hud-m-fill.good { background: var(--green); }
+.hud-attempt-badge.warn-stab { color: var(--orange); background: rgba(232,120,48,0.12); border-color: var(--orange); }
+.hud-attempt-badge.crit-stab { color: var(--red); background: rgba(229,57,53,0.12); border-color: var(--red); }
+.hud-attempt-badge.crit-shields { color: var(--red); background: rgba(229,57,53,0.12); border-color: var(--red); animation: tPulse 0.6s infinite alternate; }
+
+
+/* ===================================================
+   DEADLINE DASH INTERACTIVE CONTROLS & ANIMATIONS
+   =================================================== */
+
+.pg-controls-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pg-work-btn {
+  width: 100%;
+  max-width: 520px;
+  min-height: 54px;
+  border-radius: 12px;
+  background: var(--teal);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid var(--teal-dark);
+  box-shadow: var(--shadow-md), var(--shadow-teal);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.pg-work-btn:hover {
+  background: var(--teal-dark);
+  box-shadow: 0 6px 24px rgba(46, 205, 166, 0.45);
+}
+.pg-work-btn:active {
+  transform: scale(0.97);
+  background: #24997c;
+}
+.pg-work-icon {
+  font-size: 1.3rem;
+}
+
+.pg-dismiss-dock {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 580px;
+}
+@media (max-width: 520px) {
+  .pg-dismiss-dock {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
+.pg-dir-btn {
+  padding: 8px 10px;
+  min-height: 42px;
+  border-radius: 8px;
+  background: #0E1D42;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.pg-dir-btn.btn-left { border-color: #2196F3; color: #64B5F6; }
+.pg-dir-btn.btn-up { border-color: #FFCA28; color: #FFE082; }
+.pg-dir-btn.btn-right { border-color: #E87830; color: #FFB74D; }
+.pg-dir-btn.btn-down { border-color: #00C853; color: #81C784; }
+
+.pg-dir-btn:hover {
+  transform: translateY(-2px);
+  background: #172B52;
+}
+.pg-dir-btn:active {
+  transform: scale(0.95);
+}
+
+.hud-attempt-badge.flow-active {
+  background: rgba(46, 205, 166, 0.15);
+  border-color: var(--teal);
+  color: var(--teal);
+  animation: glowPulse 1.2s infinite alternate;
+}
+@keyframes glowPulse {
+  from { box-shadow: 0 0 4px rgba(46, 205, 166, 0.3); }
+  to { box-shadow: 0 0 12px rgba(46, 205, 166, 0.6); }
+}
+
+
+/* ===================================================
+   PROCRASTINATOR ONE-BUTTON AVOID STYLES
+   Reference: PacoGames Avoid
+   =================================================== */
+
+.pg-dodge-btn {
+  width: 100%;
+  max-width: 580px;
+  min-height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2ECDA6 0%, #1FB490 100%);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid #24997C;
+  box-shadow: 0 4px 18px rgba(46, 205, 166, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.pg-dodge-btn:hover {
+  background: linear-gradient(135deg, #37DCB3 0%, #2ECDA6 100%);
+  box-shadow: 0 6px 24px rgba(46, 205, 166, 0.55);
+  transform: translateY(-2px);
+}
+.pg-dodge-btn:active {
+  transform: scale(0.97);
+  background: #24997C;
+  box-shadow: 0 2px 8px rgba(46, 205, 166, 0.3);
+}
+.pg-dodge-icon {
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+.hud-score-display, .hud-avoided-display {
+  display: flex;
+  align-items: center;
+  background: rgba(21, 43, 74, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+@media (max-width: 600px) {
+  .pg-dodge-btn {
+    min-height: 50px;
+    font-size: 0.88rem;
+    letter-spacing: 1.2px;
+  }
+}
+
+/* ===== UNIFIED RESULTS & IMPROVEMENT DESIGN SYSTEM ===== */
+#game-screen, #distracted-game-screen, #procrastinator-game-screen, #focused-game-screen,
+#final-score-screen, #distracted-final-score-screen, #procrastinator-final-score-screen, #focused-final-score-screen,
+#guidance-screen, #distracted-guidance-screen, #procrastinator-guidance-screen, #focused-guidance-screen,
+#level-complete-screen, #distracted-level-complete-screen, #procrastinator-level-complete-screen, #focused-level-complete-screen,
+#game-over-screen, #distracted-game-over-screen, #procrastinator-game-over-screen, #focused-game-over-screen {
+  background: #ffffff !important;
+}
+
+.fs-levels-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(46, 205, 166, 0.12);
+  border: 1.5px solid var(--teal);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+.fs-levels-badge.partial {
+  background: rgba(255, 202, 40, 0.15);
+  border-color: var(--yellow);
+  color: #0E1D42;
+}
+.fs-levels-badge.needs-work {
+  background: rgba(229, 57, 53, 0.12);
+  border-color: var(--red);
+  color: #c62828;
+}
+.fs-levels-icon {
+  font-weight: 700;
+}
+
+.hud-attempt-badge.second-attempt {
+  color: #E87830 !important;
+  background: rgba(232,120,48,.12) !important;
+  border-color: #E87830 !important;
+}
+
+#procrastinator-canvas, #distracted-canvas, #game-canvas {
+  background: #ffffff;
+  border: 2px solid #0E1D42;
+  border-radius: 8px;
+  display: block;
+}
+
+
+/* ===== RE:SET IMPROVEMENTS (Logo, Instructions, Responsiveness) ===== */
+#focused-logo-btn img, .gtb-logo img {
+  height: clamp(38px, 6vw, 48px) !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+.instr-logo img { height: clamp(52px, 10vw, 72px) !important; width: auto !important; object-fit: contain !important; }
+.lc-logo img, .go-logo img { height: clamp(48px, 9vw, 68px) !important; width: auto !important; object-fit: contain !important; }
+.fs-logo img, .guide-logo img { height: clamp(50px, 9vw, 70px) !important; width: auto !important; object-fit: contain !important; }
+
+/* Sound toggle button */
+.sound-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.sound-toggle-btn:hover { transform: scale(1.08); background: #f8fafc; }
+.sound-toggle-btn:active { transform: scale(0.95); }
+
+/* Compact Single-Screen Instructions */
+#focused-instructions-screen {
+  padding: clamp(10px, 2.5vw, 20px) clamp(10px, 2.5vw, 18px) !important;
+  min-height: 100vh !important; min-height: 100dvh !important;
+  align-items: center !important; justify-content: center !important;
+}
+#focused-instructions-screen .instr-wrap {
+  max-width: 680px !important; width: 100% !important;
+}
+.instr-tri-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;
+}
+.instr-tri-card {
+  background: #f8fafc; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 10px 12px;
+}
+.instr-tri-lbl {
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;
+}
+.instr-tri-val {
+  font-size: 0.82rem; font-weight: 600; color: #0E1D42; line-height: 1.4;
+}
+.instr-levels-ribbon {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; background: #f1f5f9; border-radius: 8px; margin-bottom: 16px;
+  font-size: 0.78rem; font-weight: 600;
+}
+@media (max-width: 640px) {
+  #focused-instructions-screen { padding: 8px 10px !important; }
+  .instr-header { padding: 10px 12px !important; gap: 10px !important; }
+  .instr-char img { height: 50px !important; }
+  .instr-title { font-size: 1.2rem !important; margin: 0 !important; }
+  .instr-hook { font-size: 0.72rem !important; margin-top: 2px !important; }
+  .instr-body { padding: 10px 12px !important; }
+  .instr-tri-grid { grid-template-columns: 1fr; gap: 4px; margin-bottom: 8px; }
+  .instr-tri-card { padding: 5px 8px; }
+  .instr-tri-lbl { font-size: 0.6rem; margin-bottom: 1px; }
+  .instr-tri-val { font-size: 0.75rem; line-height: 1.25; }
+  .instr-levels-ribbon { padding: 4px 8px; margin-bottom: 8px; font-size: 0.7rem; }
+  .instr-actions .gbtn { min-height: 42px; padding: 6px 12px; font-size: 0.8rem; }
+  .guide-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Landscape grid optimization */
+@media (max-height: 540px) and (orientation: landscape) {
+  .focus-main-layout { padding: 4px 10px !important; gap: 6px !important; }
+  .focus-grid-wrap {
+    width: min(calc(100dvh - 100px), 300px) !important;
+    height: min(calc(100dvh - 100px), 300px) !important;
+    padding: 6px !important;
+  }
+  .focus-status-banner { padding: 3px 12px !important; margin-bottom: 4px !important; font-size: 0.72rem !important; }
+  .focus-step-dock { margin-top: 4px !important; }
+}
+
+/* Topbar cleanup: clean logo button */
+#focused-logo-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 4px !important;
+  min-height: 40px !important;
+  min-width: 40px !important;
+}
+
+
+/* ===================================================
+   FOCUSED ONE CHARACTER VISIBILITY & LANDSCAPE FIXES
+   =================================================== */
+
+/* Always keep character visible across all screens and orientations */
+.focus-char-sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 4px !important;
+  width: auto !important;
+}
+.focus-char-sidebar img {
+  height: clamp(80px, 24vh, 140px) !important;
+  max-height: 140px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 4px 12px rgba(21,43,74,0.18)) !important;
+  display: block !important;
+}
+.focus-char-badge {
+  display: inline-block !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+  color: var(--green) !important;
+  background: rgba(0,200,83,0.12) !important;
+  border: 1px solid rgba(0,200,83,0.3) !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  margin-top: 4px !important;
+}
+
+/* Portrait phone character positioning */
+@media (max-width: 768px) and (orientation: portrait) {
+  .focus-main-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 6px 10px !important;
+  }
+  .focus-char-sidebar img {
+    height: 70px !important;
+  }
+  .focus-grid-wrap {
+    width: min(85vw, 320px) !important;
+    height: min(85vw, 320px) !important;
+  }
+}
+
+/* Landscape Level Complete: Fits on one screen without scrolling */
+@media (max-height: 540px) and (orientation: landscape) {
+  #focused-level-complete-screen {
+    padding: 6px 12px !important;
+    justify-content: center !important;
+  }
+  #focused-level-complete-screen .lc-wrap {
+    max-width: 580px !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+  }
+  #focused-level-complete-screen .lc-head {
+    padding: 6px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+  #focused-level-complete-screen .lc-logo img {
+    height: 24px !important;
+    margin-bottom: 0 !important;
+  }
+  #focused-level-complete-screen .lc-title-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  #focused-level-complete-screen .lc-check {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 0.75rem !important;
+  }
+  #focused-level-complete-screen .lc-title {
+    font-size: 1.05rem !important;
+    margin: 0 !important;
+  }
+  #focused-level-complete-screen .lc-body {
+    padding: 8px 14px !important;
+  }
+  #focused-level-complete-screen .lc-attempt-tag {
+    display: inline-block !important;
+    padding: 2px 8px !important;
+    font-size: 0.68rem !important;
+    margin-bottom: 6px !important;
+  }
+  #focused-level-complete-screen .lc-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  #focused-level-complete-screen .lc-stat {
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+    background: #f8f9fb !important;
+  }
+  #focused-level-complete-screen .lc-stat-lbl {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 2px !important;
+  }
+  #focused-level-complete-screen .lc-stat-val {
+    font-size: 0.95rem !important;
+    line-height: 1.1 !important;
+  }
+  #focused-level-complete-screen .lc-actions {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+  }
+  #focused-level-complete-screen .lc-actions .gbtn {
+    flex: 1 !important;
+    min-height: 38px !important;
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Game Over & Final score landscape fit */
+  #focused-game-over-screen, #focused-final-score-screen, #focused-guidance-screen {
+    padding: 6px 12px !important;
+    justify-content: center !important;
+  }
+  .go-wrap, .fs-wrap, .guide-wrap {
+    max-width: 580px !important;
+    border-radius: 12px !important;
+  }
+  .go-head, .fs-head, .guide-head {
+    padding: 6px 14px !important;
+  }
+  .go-body, .fs-body, .guide-body {
+    padding: 8px 14px !important;
+  }
+  .fs-char-img img { height: 60px !important; }
+  .fs-breakdown {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 6px !important;
+  }
+  .fs-stat { padding: 4px 6px !important; }
+  .fs-stat-val { font-size: 0.95rem !important; }
+  .fs-stat-lbl { font-size: 0.58rem !important; }
+  .fs-message-card { padding: 6px 10px !important; margin-bottom: 6px !important; }
+  .fs-message { font-size: 0.75rem !important; line-height: 1.35 !important; margin-bottom: 2px !important; }
+  .fs-quote { font-size: 0.72rem !important; line-height: 1.3 !important; }
+  .fs-disclaimer { display: none !important; }
+  .fs-actions, .guide-actions { display: flex !important; gap: 8px !important; }
+  .fs-actions .gbtn, .guide-actions .gbtn {
+    flex: 1 !important; min-height: 38px !important; padding: 6px 10px !important; font-size: 0.78rem !important;
+  }
+}
+
+</style>
+  
+<style>
+
+/* ===== GUIDANCE SCREENS (ALL 4 GAMES) ===== */
+.guidance-wrap {
+  width: 100%;
+  max-width: 860px;
+  margin: 20px auto;
+  background: #ffffff;
+  border: 2px solid #0E1D42;
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 12px 36px rgba(14, 29, 66, 0.08);
+  box-sizing: border-box;
+}
+.guidance-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.guidance-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.guidance-logo img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+}
+.guidance-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0E1D42;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+.guidance-subtitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+.guidance-tips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 680px) {
+  .guidance-tips-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.guidance-tip-card {
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.guidance-tip-card:hover {
+  border-color: #2ECDA6;
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(46, 205, 166, 0.12);
+}
+.guidance-tip-badge {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0E1D42;
+  background: rgba(46, 205, 166, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+.guidance-tip-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0E1D42;
+  margin: 0 0 8px;
+}
+.guidance-tip-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #475569;
+  margin: 0;
+}
+.guidance-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+</style>
+<style id="focused-mobile-enhancements">
+/* ===================================================================
+   THE FOCUSED ONE — MOBILE, LANDSCAPE & TOUCH ENHANCEMENTS
+   (appended; overrides earlier rules for the Focused One screens only)
+   =================================================================== */
+:root {
+  --vh100: 100vh;
+  --hud-w: clamp(132px, 22vw, 176px);
+}
+@supports (height: 100dvh) {
+  :root { --vh100: 100dvh; }
+}
+html, body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+[hidden] { display: none !important; }
+body.rotate-needed { overflow: hidden; }
+
+/* ---------- Result / instruction screens: breathing room on every device ---------- */
+#focused-instructions-screen,
+#focused-level-complete-screen,
+#focused-game-over-screen {
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: var(--vh100);
+  padding: clamp(12px, 3vw, 32px)
+           calc(clamp(10px, 3vw, 20px) + env(safe-area-inset-right, 0px))
+           calc(clamp(16px, 3vw, 32px) + env(safe-area-inset-bottom, 0px))
+           calc(clamp(10px, 3vw, 20px) + env(safe-area-inset-left, 0px));
+}
+#focused-final-score-screen,
+#focused-guidance-screen {
+  justify-content: flex-start !important;
+  align-items: center !important;
+  box-sizing: border-box;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior-y: contain !important;
+  scroll-behavior: smooth !important;
+  padding: clamp(20px, 4vw, 36px) clamp(14px, 3vw, 20px) clamp(80px, 12vh, 120px) !important;
+}
+#focused-instructions-screen .instr-wrap { max-width: 700px; }
+#focused-level-complete-screen .lc-wrap,
+#focused-game-over-screen .go-wrap,
+#focused-guidance-screen .guide-wrap { margin: 0 auto; }
+#focused-final-score-screen .fs-wrap {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 0 auto clamp(36px, 5vh, 60px) auto !important;
+  flex-shrink: 0 !important;
+}
+#focused-guidance-screen .guide-wrap { max-width: 820px; }
+#focused-level-complete-screen,
+#focused-game-over-screen,
+#focused-final-score-screen { text-align: center; }
+
+/* ---------- GAME SCREEN: fixed to the visible viewport ---------- */
+#focused-game-screen {
+  height: var(--vh100);
+  min-height: var(--vh100);
+  justify-content: flex-start;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+#focused-game-screen .game-topbar {
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  margin-left: calc(-1 * env(safe-area-inset-left, 0px));
+  margin-right: calc(-1 * env(safe-area-inset-right, 0px));
+  width: calc(100% + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px));
+  padding-left: calc(14px + env(safe-area-inset-left, 0px));
+  padding-right: calc(14px + env(safe-area-inset-right, 0px));
+}
+
+/* Logo = quit button (asset itself unchanged) */
+#focused-logo-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 4px 8px;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background .2s ease, transform .15s ease;
+}
+#focused-logo-btn img {
+  height: clamp(30px, 5vw, 42px);
+  width: auto;
+  display: block;
+  pointer-events: none;
+}
+#focused-logo-btn:hover { background: rgba(14, 29, 66, .06); }
+#focused-logo-btn:active { transform: scale(.95); background: rgba(14, 29, 66, .1); }
+#focused-logo-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+/* HUD polish */
+.hud-timer {
+  background: rgba(14, 29, 66, .06);
+  border: 1.5px solid var(--border-light);
+  border-radius: 8px;
+  padding: 2px 10px;
+}
+.hud-t-val { font-variant-numeric: tabular-nums; }
+.gtb-badge, .hud-attempt-badge { white-space: nowrap; }
+
+/* Stage sizing: grid always fits the visible height */
+#focused-game-screen .focus-main-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 920px;
+  padding: 10px 16px 14px;
+}
+#focused-game-screen .focus-center-stage { min-height: 0; }
+#focused-game-screen .focus-grid-wrap {
+  width: min(100%, 440px, max(210px, calc(var(--vh100) - 245px)));
+  max-width: none;
+  max-height: none;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+#focused-game-screen .focus-status-banner {
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #0E1D42, #16305f);
+  border-bottom: 3px solid var(--teal);
+}
+#focused-game-screen .focus-status-text { line-height: 1.35; display: block; }
+#focused-game-screen .focus-step-dock { margin-top: 12px; min-height: 12px; }
+
+/* Cells: clearer numbers, larger dot, finger-friendly */
+.focus-cell {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  background: linear-gradient(160deg, #17305e 0%, #0E1D42 70%);
+}
+.f-cell-dot { width: clamp(10px, 2.2vmin, 14px); height: clamp(10px, 2.2vmin, 14px); background: rgba(255,255,255,.28); }
+.f-cell-num { font-size: clamp(.78rem, 2.4vmin, 1rem); color: rgba(255,255,255,.7); }
+.focus-cell:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+@media (hover: none) {
+  .focus-cell:hover { border-color: rgba(255,255,255,.12); transform: none; }
+  .focus-cell.lit:hover { border-color: #fff; transform: scale(1.05); }
+  .focus-cell.correct:hover { transform: scale(1.04); }
+  .gbtn:hover { box-shadow: none; }
+}
+
+/* ---------- Quit confirmation modal ---------- */
+.quit-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(14, 29, 66, .62);
+  animation: screenIn .2s ease both;
+  touch-action: none;
+}
+.quit-modal-card {
+  width: min(92vw, 420px);
+  max-height: calc(var(--vh100) - 24px);
+  overflow-y: auto;
+  background: #fff;
+  border: 2px solid #0E1D42;
+  border-top: 5px solid var(--teal);
+  border-radius: 16px;
+  padding: 24px 22px 22px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+.quit-modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+  font-weight: 700;
+  color: #0E1D42;
+  letter-spacing: .5px;
+  line-height: 1.3;
+  margin-bottom: 18px;
+}
+.quit-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.quit-modal-actions .gbtn { width: 100%; min-height: 50px; letter-spacing: 1.2px; }
+
+
+
+/* ---------- Portrait phones (fallback when rotation prompt is skipped) ---------- */
+@media (orientation: portrait) and (max-width: 600px) {
+  #focused-game-screen .game-topbar { gap: 6px 8px; padding-bottom: 8px; }
+  #focused-game-screen .gtb-center { order: 3; width: 100%; justify-content: center; }
+  #focused-game-screen .gtb-right { gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+  #focused-game-screen .focus-main-layout { padding: 8px 10px 12px; align-items: center; }
+  #focused-game-screen .focus-grid-wrap { width: min(100%, max(210px, calc(var(--vh100) - 270px))); }
+  .quit-modal-card { padding: 20px 16px; }
+}
+
+/* ===================================================================
+   LANDSCAPE PHONES (short viewports): HUD becomes a side panel so the
+   grid can use the full screen height
+   =================================================================== */
+@media (orientation: landscape) and (max-height: 500px) {
+  #focused-game-screen.active {
+    display: grid;
+    grid-template-columns: var(--hud-w) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+    padding-top: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* HUD side panel */
+  #focused-game-screen .game-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: auto;
+    height: 100%;
+    margin: 0;
+    padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px 8px;
+    border-bottom: 0;
+    border-right: 2px solid var(--border-light);
+    box-shadow: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #focused-logo-btn { align-self: center; min-height: 40px; padding: 2px 6px; }
+  #focused-logo-btn img { height: 32px; }
+  #focused-game-screen .gtb-center { flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 4px; }
+  #focused-game-screen .gtb-badge {
+    white-space: normal; text-align: center; font-size: .58rem; letter-spacing: .6px; line-height: 1.25; padding: 4px 6px;
+  }
+  #focused-game-screen .hud-attempt-badge { text-align: center; font-size: .56rem; letter-spacing: .8px; padding: 3px 6px; }
+  #focused-game-screen .gtb-right { flex-direction: column; align-items: stretch; gap: 5px; }
+  #focused-game-screen .hud-timer { justify-content: space-between; padding: 1px 8px; }
+  #focused-game-screen .hud-t-val { font-size: 1.35rem; min-width: 0; }
+  #focused-game-screen .hud-t-lbl,
+  #focused-game-screen .hud-m-lbl { font-size: .54rem; letter-spacing: 1px; }
+  #focused-game-screen .hud-meter { justify-content: space-between; gap: 5px; }
+  #focused-game-screen .hud-m-track { flex: 1; width: auto; min-width: 20px; height: 6px; }
+  #focused-game-screen .hud-m-pct { font-size: .62rem; min-width: 0; }
+  #focused-game-screen #focused-hud-shields { font-size: .62rem !important; padding: 2px 6px; letter-spacing: .5px; }
+
+  /* Play area */
+  #focused-game-screen .focus-main-layout {
+    --gs: max(150px, min(
+      calc(var(--vh100) - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+      calc(100vw - var(--hud-w) - 130px - 28px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))
+    ));
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "grid status" "grid char" "grid dots";
+    column-gap: 14px;
+    row-gap: 6px;
+    align-items: center;
+    align-content: center;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) 10px 8px;
+  }
+  #focused-game-screen .focus-center-stage { display: contents; }
+  #focused-game-screen .focus-grid-wrap {
+    grid-area: grid;
+    width: var(--gs);
+    height: var(--gs);
+    padding: 6px;
+    border-radius: 14px;
+  }
+  #focused-game-screen .focus-grid { gap: 7px; }
+  #focused-game-screen .focus-status-banner { grid-area: status; margin: 0; padding: 8px 10px; align-self: start; }
+  #focused-game-screen .focus-status-text { font-size: .66rem; letter-spacing: 1px; }
+  #focused-game-screen .focus-step-dock { grid-area: dots; margin: 0; flex-wrap: wrap; gap: 6px; align-self: end; }
+  #focused-game-screen .focus-char-sidebar {
+    display: flex;
+    grid-area: char;
+    width: auto;
+    min-height: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    justify-content: center;
+  }
+  #focused-game-screen .focus-char-sidebar img {
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  #focused-game-screen .focus-char-badge { margin-top: 4px; font-size: .55rem; padding: 2px 8px; letter-spacing: 1.2px; }
+
+  #focused-toast {
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: calc(50% + var(--hud-w) / 2);
+    font-size: .68rem;
+    padding: 7px 14px;
+  }
+
+  /* Quit modal: side-by-side buttons */
+  .quit-modal-card { padding: 16px 18px; width: min(90vw, 520px); }
+  .quit-modal-title { margin-bottom: 12px; }
+  .quit-modal-actions { flex-direction: row; }
+  .quit-modal-actions .gbtn { min-height: 46px; padding: 8px 10px; font-size: .74rem; }
+
+  /* Rotate overlay not shown in landscape; compact other screens */
+  #focused-instructions-screen,
+  #focused-level-complete-screen,
+  #focused-game-over-screen,
+  #focused-final-score-screen,
+  #focused-guidance-screen {
+    justify-content: flex-start;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  .instr-wrap, .lc-wrap, .go-wrap, .fs-wrap, .guide-wrap { border-radius: 14px; }
+  .instr-header { flex-direction: row; text-align: left; padding: 10px 16px; gap: 14px; }
+  .instr-char img { height: 62px; }
+  .instr-logo img { height: 24px; margin-bottom: 4px; }
+  .instr-title { font-size: 1.3rem; }
+  .instr-hook { font-size: .8rem; }
+  .instr-body { padding: 12px 16px; }
+  .instr-desc { font-size: .8rem; line-height: 1.45; margin-bottom: 10px; }
+  .instr-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+  .instr-card { padding: 8px 10px; }
+  .instr-card-value { font-size: .78rem; }
+  .instr-levels { flex-direction: row; gap: 8px; margin-bottom: 12px; }
+  .instr-lvl { padding: 8px 6px; }
+  .instr-actions { flex-direction: row; width: auto; justify-content: flex-end; gap: 10px; }
+  .instr-actions .gbtn { width: auto; }
+
+  .lc-head, .go-head, .fs-head, .guide-head { padding: 12px 16px; }
+  .lc-body, .go-body, .fs-body, .guide-body { padding: 12px 16px; }
+  .lc-logo img, .go-logo img { height: 26px; }
+  .fs-logo img { height: 34px; margin-bottom: 6px; }
+  .lc-stats { grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .lc-stat { padding: 8px 8px; }
+  .lc-stat-val { font-size: .95rem; }
+  .lc-actions { flex-direction: row; width: auto; justify-content: center; gap: 10px; }
+  .lc-actions .gbtn, .go-actions .gbtn, .fs-actions .gbtn, .guide-actions .gbtn { width: auto; }
+  .go-actions { flex-direction: row; justify-content: center; }
+  .go-icon { font-size: 1.6rem; margin-bottom: 4px; }
+  .fs-char-img img { height: 70px; }
+  .fs-dual-scores { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .fs-breakdown { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; margin-bottom: 12px; }
+  .fs-actions { flex-direction: row; width: auto; gap: 8px; }
+  .guide-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+  .guide-actions { flex-direction: row; width: auto; gap: 8px; }
+}
+
+/* Very short landscape (small phones): trim a little more */
+@media (orientation: landscape) and (max-height: 360px) {
+  :root { --hud-w: clamp(124px, 21vw, 150px); }
+  #focused-game-screen .game-topbar { gap: 4px; }
+  #focused-logo-btn img { height: 28px; }
+  #focused-game-screen .hud-t-val { font-size: 1.2rem; }
+  
+}
+</style>
+
+<style id="focused-guidance-scroll-fix">
+/* Focused guidance: let the whole page grow naturally and scroll on phones. */
+#focused-guidance-screen {
+  height: auto !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  max-height: none !important;
+  overflow: visible !important;
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 20px 14px calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+  touch-action: pan-y !important;
+}
+#focused-guidance-screen .guide-wrap {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 820px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  margin: 0 auto !important;
+}
+#focused-guidance-screen .guide-head,
+#focused-guidance-screen .guide-body {
+  flex-shrink: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+#focused-guidance-screen .guide-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin-bottom: 22px !important;
+}
+#focused-guidance-screen .guide-card {
+  min-width: 0 !important;
+  height: auto !important;
+  padding: clamp(14px, 2.5vw, 20px) !important;
+  overflow-wrap: anywhere;
+}
+#focused-guidance-screen .guide-statement { margin-bottom: 22px !important; }
+#focused-guidance-screen .guide-actions { width: 100%; gap: 10px; }
+#focused-guidance-screen .guide-actions .gbtn { max-width: 100%; }
+@media (max-width: 680px) {
+  #focused-guidance-screen { padding: 10px 10px calc(22px + env(safe-area-inset-bottom, 0px)) !important; }
+  #focused-guidance-screen .guide-wrap { border-radius: 14px; }
+  #focused-guidance-screen .guide-head { padding: 22px 16px !important; }
+  #focused-guidance-screen .guide-body { padding: 18px 14px 20px !important; }
+  #focused-guidance-screen .guide-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 12px !important; }
+  #focused-guidance-screen .guide-card { padding: 16px !important; }
+  #focused-guidance-screen .guide-title { font-size: clamp(1.25rem, 5.4vw, 1.8rem); letter-spacing: 1.2px; }
+  #focused-guidance-screen .guide-sub { font-size: .88rem; }
+  #focused-guidance-screen .guide-actions { flex-direction: column; align-items: stretch; }
+  #focused-guidance-screen .guide-actions .gbtn { width: 100%; min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #focused-guidance-screen { scroll-behavior: auto !important; }
+}
+</style>
+
+
+<style id="focused-guidance-scroll-fix">
+/* Guidance/results screens can grow naturally and scroll on short mobile screens. */
+html, body { min-height: 100%; }
+#focused-guidance-screen {
+  height: auto !important; min-height: 100vh !important; min-height: 100dvh !important;
+  max-height: none !important; overflow: visible !important;
+  justify-content: flex-start !important; padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+}
+#focused-guidance-screen .guide-wrap {
+  width: min(100%, 820px) !important; max-width: 820px !important;
+  height: auto !important; max-height: none !important; overflow: visible !important;
+  margin: 12px auto 24px !important; box-sizing: border-box;
+}
+#focused-guidance-screen .guide-actions { padding-bottom: 8px; }
+@media (max-width: 600px) {
+  #focused-guidance-screen { padding: 10px 10px max(24px, env(safe-area-inset-bottom)) !important; }
+  #focused-guidance-screen .guide-wrap { width: 100% !important; margin: 0 auto 16px !important; border-radius: 16px; }
+  #focused-guidance-screen .guide-head { padding: 22px 14px !important; }
+  #focused-guidance-screen .guide-body { padding: 16px 12px 20px !important; }
+  #focused-guidance-screen .guide-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 12px !important; }
+  #focused-guidance-screen .guidance-tip-card { padding: 16px !important; }
+  #focused-guidance-screen .guide-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+  #focused-guidance-screen .guide-actions .gbtn { width: 100% !important; min-height: 48px; }
+}
+</style>
+
+</head>
+<body>
+  <div id="pixel-decor"></div>
+  <div id="transition-overlay"></div>
+<!-- ======== FOCUSED ONE GAME INSTRUCTIONS ======== -->
+<div class="screen active fade-in" id="focused-instructions-screen">
+  <div class="instr-wrap">
+    <div class="instr-header" style="background:#0E1D42;">
+      <div class="instr-char"><img src="focused.png" alt="The Focused One"></div>
+      <div class="instr-title-block">
+        <div class="instr-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+        <div class="instr-tag" style="color:var(--green);">FOCUSED MINDSET CHALLENGE</div>
+        <h1 class="instr-title">FOCUS GRID</h1>
+        <p class="instr-hook">"Train your working memory and lock into deep cognitive flow."</p>
+      </div>
+    </div>
+    <div class="instr-body">
+      <div class="instr-tri-grid">
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🎯 Objective</div>
+          <div class="instr-tri-val">Watch the illuminated sequence, then tap the cells in the exact order.</div>
+        </div>
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🎮 Controls</div>
+          <div class="instr-tri-val">Tap illuminated cells on mobile screen or click with mouse on desktop.</div>
+        </div>
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🏆 Win Condition</div>
+          <div class="instr-tri-val">Complete all rounds across 3 grid levels (3×3, 4×4, 4×4) while holding shields.</div>
+        </div>
+      </div>
+      <div class="instr-levels-ribbon">
+        <span style="color:var(--teal);">Level 1: 3×3 Grid (3 Rounds)</span>
+        <span>·</span>
+        <span style="color:var(--green);">Level 2: 4×4 Grid (3 Rounds)</span>
+        <span>·</span>
+        <span style="color:var(--blue);">Level 3: 4×4 Grid (4 Rounds)</span>
+      </div>
+      <div class="instr-actions">
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← Back to Personas</button>
+        <button class="gbtn gbtn-green" onclick="startFocusedChallenge()">START CHALLENGE →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FOCUSED ONE GAME SCREEN ======== -->
+<div class="screen" id="focused-game-screen">
+  <div class="game-topbar">
+    <button type="button" class="gtb-logo" id="focused-logo-btn" aria-label="RE:SET logo. Tap to quit the game"><img src="logo-blue-outline.png" alt="RE:SET"></button>
+    <button type="button" class="sound-toggle-btn" onclick="sfx.toggleMute()" aria-label="Toggle sound" title="Sound On (tap to mute)">🔊</button>
+    <div class="gtb-center">
+      <div class="gtb-badge" id="focused-hud-level" style="background:#0E1D42;">LEVEL 1 — FIND YOUR FOCUS</div>
+      <div class="hud-attempt-badge" id="focused-hud-attempt">ATTEMPT 1/2</div>
+      <div class="hud-attempt-badge" id="focused-hud-round">ROUND 1/3</div>
+    </div>
+    <div class="gtb-right">
+      <div class="hud-timer">
+        <span class="hud-t-lbl">TIME</span>
+        <span class="hud-t-val" id="focused-hud-timer">60</span>
+      </div>
+      <div class="hud-meter">
+        <span class="hud-m-lbl">FOCUS</span>
+        <div class="hud-m-track"><div class="hud-m-fill" id="focused-m-fill"></div></div>
+        <span class="hud-m-pct" id="focused-m-pct">20%</span>
+      </div>
+      <div class="hud-meter" style="gap:4px;">
+        <span class="hud-m-lbl">SHIELDS</span>
+        <span class="hud-attempt-badge" id="focused-hud-shields" style="color:var(--green);border-color:var(--green);font-size:0.75rem;">✦ ✦ ✦</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="focus-main-layout">
+    <!-- Desktop Character Sidecard -->
+    <div class="focus-char-sidebar">
+      <img src="focused.png" alt="The Focused One">
+      <span class="focus-char-badge">FLOW STATE</span>
+    </div>
+
+    <!-- Center Interactive Grid Stage -->
+    <div class="focus-center-stage">
+      <div class="focus-status-banner">
+        <span class="focus-status-text" id="focus-status-text">✦ WATCH THE SEQUENCE CAREFULLY...</span>
+      </div>
+
+      <div class="focus-grid-wrap">
+        <div class="focus-grid" id="focus-grid-container"></div>
+      </div>
+
+      <div class="focus-step-dock" id="focus-step-dots"></div>
+    </div>
+  </div>
+
+  <div id="focused-toast"></div>
+  <div class="game-flash" id="focused-flash"></div>
+</div>
+
+<!-- ======== FOCUSED ONE LEVEL COMPLETE ======== -->
+<div class="screen" id="focused-level-complete-screen">
+  <div class="lc-wrap">
+    <div class="lc-head" style="background:#0E1D42;">
+      <div class="lc-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="lc-title-row">
+        <div class="lc-check" style="background:var(--green);color:#fff;">✓</div>
+        <h2 class="lc-title" id="focused-lc-title">FOCUS ZONE CLEARED!</h2>
+      </div>
+    </div>
+    <div class="lc-body">
+      <div class="lc-attempt-tag" id="focused-lc-attempt-tag" style="color:#0E1D42;background:rgba(0,200,83,0.15);border-color:var(--green);">✓ Cleared on Attempt 1 of 2</div>
+      <div class="lc-stats">
+        <div class="lc-stat">
+          <div class="lc-stat-lbl">Rounds Cleared</div>
+          <div class="lc-stat-val" id="focused-lc-rounds">—</div>
+        </div>
+        <div class="lc-stat">
+          <div class="lc-stat-lbl">Shields Left</div>
+          <div class="lc-stat-val" id="focused-lc-shields" style="color:var(--green);">—</div>
+        </div>
+        <div class="lc-stat">
+          <div class="lc-stat-lbl">Concentration</div>
+          <div class="lc-stat-val" id="focused-lc-focus" style="color:var(--teal);">—</div>
+        </div>
+        <div class="lc-stat">
+          <div class="lc-stat-lbl">Time Left</div>
+          <div class="lc-stat-val" id="focused-lc-time" style="color:var(--blue);">—</div>
+        </div>
+      </div>
+      <div class="lc-actions">
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+        <button class="gbtn gbtn-teal" id="focused-lc-next-btn" onclick="handleFocusedNextClick()">NEXT LEVEL →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FOCUSED ONE GAME OVER ======== -->
+<div class="screen" id="focused-game-over-screen">
+  <div class="go-wrap">
+    <div class="go-head" style="background:#0E1D42;">
+      <div class="go-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="go-icon" style="background:rgba(0,200,83,0.15);color:var(--green);">✧</div>
+      <div class="go-badge" id="focused-go-badge">ATTEMPT 1 OF 2 FAILED</div>
+      <h2 class="go-title" id="focused-go-title">FOCUS SHIELDS DEPLETED</h2>
+      <p class="go-sub" id="focused-go-sub">Peripheral noise interrupted your working memory trail. Take a grounding breath and reset.</p>
+    </div>
+    <div class="go-body">
+      <div class="go-attempt-card">
+        <p class="go-attempt-msg" id="focused-go-attempt-msg">You have 1 retry remaining for this session.</p>
+      </div>
+      <div class="go-actions">
+        <button class="gbtn gbtn-navy" id="focused-go-retry-btn" onclick="retryFocusedLevel()">↔ RETRY LEVEL (ATTEMPT 2/2)</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FOCUSED ONE FINAL RESULTS ======== -->
+<div class="screen" id="focused-final-score-screen">
+  <div class="fs-wrap">
+    <div class="fs-head" style="background:#0E1D42;">
+      <div class="fs-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="fs-super" style="color:var(--green);">THE FOCUSED ONE CHALLENGE</div>
+      <h2 class="fs-title" id="focused-fs-title">FOCUS RESTORED</h2>
+    </div>
+    <div class="fs-body">
+      <div class="fs-char-img"><img src="focused.png" alt="The Focused One"></div>
+
+      <!-- Session Level Progress Badge -->
+      <div class="fs-levels-badge" id="focused-fs-levels-badge">
+        <span class="fs-levels-icon">✓</span>
+        <span id="focused-fs-levels">3 / 3 LEVELS COMPLETED</span>
+      </div>
+
+      <!-- Dual Scores: Cognitive Drift Score vs Focus Mastery Score -->
+      <div class="fs-dual-scores">
+        <div class="fs-score-card fs-score-ot">
+          <div class="fs-score-header">
+            <span class="fs-score-tag">COGNITIVE DRIFT</span>
+            <span class="fs-score-badge" id="focused-fs-ot-badge">0–28 LOW DRIFT</span>
+          </div>
+          <div class="fs-score-lbl">DRIFT SCORE</div>
+          <div class="fs-score-num" id="focused-fs-ot-score">18<span class="fs-score-out"> / 100</span></div>
+          <div class="fs-score-bar-wrap">
+            <div class="fs-score-bar-fill" id="focused-fs-ot-bar" style="width:18%;background:var(--blue);"></div>
+          </div>
+          <div class="fs-score-hint">Lower is better · Measures attention slips & hesitation</div>
+        </div>
+
+        <div class="fs-score-card fs-score-fc">
+          <div class="fs-score-header">
+            <span class="fs-score-tag">SUSTAINED ATTENTION</span>
+            <span class="fs-score-badge" id="focused-fs-fc-badge">DEEP FLOW</span>
+          </div>
+          <div class="fs-score-lbl">FOCUS MASTERY SCORE</div>
+          <div class="fs-score-num" id="focused-fs-fc-score">82<span class="fs-score-out"> / 100</span></div>
+          <div class="fs-score-bar-wrap">
+            <div class="fs-score-bar-fill" id="focused-fs-fc-bar" style="width:82%;background:var(--green);"></div>
+          </div>
+          <div class="fs-score-hint">Higher is better · Reflects memory retention & shields held</div>
+        </div>
+      </div>
+
+      <!-- Breakdown Stats (4 stats) -->
+      <div class="fs-breakdown">
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="focused-fs-rounds">—</div>
+          <div class="fs-stat-lbl">Rounds Cleared</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="focused-fs-mistakes" style="color:var(--orange);">—</div>
+          <div class="fs-stat-lbl">Mistakes</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="focused-fs-shields" style="color:var(--green);">—</div>
+          <div class="fs-stat-lbl">Shields Held</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="focused-fs-score" style="color:var(--teal);">—</div>
+          <div class="fs-stat-lbl">Total Score</div>
+        </div>
+      </div>
+
+      <!-- Narrative Feedback Card -->
+      <div class="fs-message-card">
+        <p class="fs-message" id="focused-fs-message">You held complex attention patterns in working memory and resisted cognitive distractions with remarkable composure.</p>
+        <p class="fs-quote" id="focused-fs-quote" style="border-left-color:var(--green);">"Where attention goes, energy flows. Deep focus creates mastery."</p>
+      </div>
+
+      <div class="fs-disclaimer">
+        * Game-based indicators reflect working memory and focus patterns in this session, not a psychological evaluation.
+      </div>
+
+      <!-- 3 Required Working Buttons -->
+      <div class="fs-actions">
+        <button class="gbtn gbtn-navy" onclick="playFocusedAgain()">↺ PLAY AGAIN</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+        <button class="gbtn gbtn-teal" onclick="openFocusedGuidanceScreen()">HOW TO IMPROVE FOCUS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FOCUSED ONE GUIDANCE SCREEN ======== -->
+<div class="screen" id="focused-guidance-screen">
+  <div class="guide-wrap">
+    <div class="guide-head" style="background:#0E1D42;">
+      <div class="guide-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="guide-tag" style="color:var(--green);">Deep Work Principles</div>
+      <h2 class="guide-title">HOW TO IMPROVE FOCUS</h2>
+      <p class="guide-sub">Practical deep work principles for university students seeking sustained attention.</p>
+    </div>
+    <div class="guide-body">
+      <!-- Exactly Four Numbered Tips -->
+      <div class="guide-grid" style="grid-template-columns:repeat(3, 1fr);">
+        <div class="guide-card">
+          <div class="guide-num">01</div>
+          <h3 class="guide-card-title">01 — ONE CONCRETE GOAL</h3>
+          <p class="guide-card-text">Write down a single concrete outcome before each study block so attention stays locked in without drifting.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-num">02</div>
+          <h3 class="guide-card-title">02 — PROTECT PEAK HOURS</h3>
+          <p class="guide-card-text">Reserve your highest alertness hours for demanding coursework and protect that uninterrupted window fiercely.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-num">03</div>
+          <h3 class="guide-card-title">03 — OFFLINE REST BREAKS</h3>
+          <p class="guide-card-text">Step away from all screens during study breaks with light walks and stretching to recharge working memory.</p>
+        </div>
+      </div>
+
+      <div class="guide-statement">
+        <div class="guide-statement-icon">✦</div>
+        <p class="guide-statement-text">"Where attention goes, energy flows. Deep focus is a muscle built through calm, steady practice."</p>
+      </div>
+
+      <div class="guide-actions">
+        <button class="gbtn gbtn-teal" onclick="backToResults('focused')">← BACK TO RESULTS</button>
+        <button class="gbtn gbtn-navy" onclick="playFocusedAgain()">↺ PLAY AGAIN</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======== QUIT CONFIRMATION MODAL ======== -->
+<div class="quit-modal" id="focused-quit-modal" role="dialog" aria-modal="true" aria-labelledby="focused-quit-title" hidden>
+  <div class="quit-modal-card">
+    <h3 class="quit-modal-title" id="focused-quit-title">Do you want to quit?</h3>
+    <div class="quit-modal-actions">
+      <button type="button" class="gbtn gbtn-teal" id="focused-quit-continue">Resume Game</button>
+      <button type="button" class="gbtn gbtn-outline" id="focused-quit-confirm">Quit to Welcome Page</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+/* ==============================================
+   AUDIO SYNTHESIS & SFX ENGINE
+   ============================================== */
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.muted = false;
+    this.bgmTimer = null;
+    this.bgmPlaying = false;
+    this.bgmStep = 0;
+    try {
+      this.muted = localStorage.getItem('reset_sound_muted') === 'true';
+    } catch(e) {}
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+  setMuted(m) {
+    this.muted = m;
+    try { localStorage.setItem('reset_sound_muted', m ? 'true' : 'false'); } catch (e) {}
+    this.updateMuteButtons();
+    if (this.muted) {
+      this.stopBgm();
+    } else {
+      const isGameActive = document.getElementById('focused-game-screen') && document.getElementById('focused-game-screen').classList.contains('active');
+      if (isGameActive && typeof FG !== 'undefined' && FG && FG.running) {
+        this.startBgm();
+      }
+    }
+  }
+  toggleMute() {
+    this.init();
+    this.setMuted(!this.muted);
+    if (!this.muted) this.point();
+    return this.muted;
+  }
+  updateMuteButtons() {
+    document.querySelectorAll('.sound-toggle-btn').forEach(btn => {
+      btn.textContent = this.muted ? '🔇' : '🔊';
+      btn.setAttribute('aria-label', this.muted ? 'Unmute game sounds' : 'Mute game sounds');
+      btn.title = this.muted ? 'Sound Muted (tap to unmute)' : 'Sound On (tap to mute)';
+    });
+  }
+  startBgm() {
+    if (this.muted || this.bgmPlaying) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      this.bgmPlaying = true;
+      this.playNextBgmMote();
+    } catch(e) {}
+  }
+  playNextBgmMote() {
+    if (!this.bgmPlaying || this.muted || !this.ctx) return;
+    try {
+      // Gentle, calm pentatonic progression for focus and concentration
+      const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66];
+      const freq = scale[this.bgmStep % scale.length];
+      this.bgmStep++;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      
+      const now = this.ctx.currentTime;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.02, now + 0.28);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 1.65);
+
+      this.bgmTimer = setTimeout(() => {
+        this.playNextBgmMote();
+      }, 1900);
+    } catch(e) {}
+  }
+  stopBgm() {
+    this.bgmPlaying = false;
+    if (this.bgmTimer) {
+      clearTimeout(this.bgmTimer);
+      this.bgmTimer = null;
+    }
+  }
+  playTone(freq, type = 'sine', duration = 0.15, vol = 0.12) {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch (e) {}
+  }
+  btnClick() { this.playTone(520, 'sine', 0.08, 0.08); }
+  step() { this.playTone(280 + Math.random() * 40, 'triangle', 0.05, 0.04); }
+  point() {
+    this.playTone(620, 'sine', 0.09, 0.12);
+    setTimeout(() => this.playTone(840, 'sine', 0.13, 0.13), 60);
+  }
+  collect() { this.point(); }
+  positive() {
+    [520, 650, 780, 1040].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.18, 0.11), i * 70);
+    });
+  }
+  damage() {
+    this.playTone(190, 'sawtooth', 0.18, 0.14);
+    setTimeout(() => this.playTone(140, 'sawtooth', 0.22, 0.14), 70);
+  }
+  warn() {
+    this.playTone(230, 'triangle', 0.12, 0.09);
+    setTimeout(() => this.playTone(190, 'triangle', 0.14, 0.09), 60);
+  }
+  win() {
+    [440, 554, 659, 880, 1108].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'triangle', 0.24, 0.13), i * 90);
+    });
+  }
+  lose() {
+    [320, 270, 220, 170].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sawtooth', 0.25, 0.12), i * 110);
+    });
+  }
+}
+const sfx = new SoundEngine();
+document.addEventListener('DOMContentLoaded', () => { sfx.updateMuteButtons(); });
+
+function createPixelDecor() {
+  const c = document.getElementById('pixel-decor');
+  if (!c) return;
+  const cols = ['#152B4A','#2ECDA6','#2196F3','#E87830','#FFCA28','#00C853'];
+  const n = window.innerWidth < 640 ? 14 : 28;
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div');
+    p.className = 'pix';
+    const s = Math.random() * 6 + 3;
+    Object.assign(p.style, {
+      width: s + 'px',
+      height: s + 'px',
+      left: (Math.random() * 96 + 2) + '%',
+      top: (Math.random() * 96 + 2) + '%',
+      background: cols[Math.floor(Math.random() * cols.length)],
+      animationDelay: (Math.random() * 20) + 's',
+      animationDuration: (Math.random() * 12 + 16) + 's'
+    });
+    c.appendChild(p);
+  }
+}
+createPixelDecor();
+
+function showScreen(hideId, showId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'fade-in'));
+  const showEl = document.getElementById(showId);
+  if (showEl) {
+    showEl.classList.add('active', 'fade-in');
+    showEl.scrollTop = 0;
+  }
+  window.scrollTo(0, 0);
+}
+
+function goBackToSelection() {
+  window.location.href = 'index.html#selection';
+}
+
+
+function backToResults(charKey) {
+  showScreen('focused-guidance-screen', 'focused-final-score-screen', 400);
+}
+
+const F_LEVEL_CONFIGS = [
+  {
+    name: 'LEVEL 1 — FIND YOUR FOCUS',
+    desc: 'Establish steady attention across a 3×3 focus matrix',
+    time: 60,
+    rows: 3,
+    cols: 3,
+    roundsRequired: 3,
+    sequenceLengths: [3, 4, 4],
+    flashDuration: 520,
+    gapDuration: 240,
+    hasDistractions: false
+  },
+  {
+    name: 'LEVEL 2 — STAY IN THE ZONE',
+    desc: 'Expand attention across a 4×4 matrix with subtle peripheral noise',
+    time: 45,
+    rows: 4,
+    cols: 4,
+    roundsRequired: 3,
+    sequenceLengths: [4, 5, 5],
+    flashDuration: 440,
+    gapDuration: 200,
+    hasDistractions: true
+  },
+  {
+    name: 'LEVEL 3 — DEEP FOCUS',
+    desc: 'Sustain working memory and lock into deep cognitive flow',
+    time: 30,
+    rows: 4,
+    cols: 4,
+    roundsRequired: 4,
+    sequenceLengths: [5, 5, 6, 6],
+    flashDuration: 380,
+    gapDuration: 180,
+    hasDistractions: true
+  }
+];
+
+const FG = {
+  level: 1,
+  sessionAttempt: 1,
+  levelsCompleted: 0,
+  round: 1,
+  levelAttempt: 1,
+  running: false,
+  timer: 35,
+  timerInterval: null,
+  focusMeter: 0, // 0 - 100%
+  shields: 3,    // 3 Focus Shields / Lives
+  score: 0,
+  sequence: [],
+  playerIndex: 0,
+  isShowingSequence: false,
+  mistakesThisLevel: 0,
+  flawlessRounds: 0,
+  roundsCleared: 0,
+  levelStats: [],
+  distractionInterval: null,
+  toastTO: null,
+  flashTO: null,
+  // pause support (quit modal / rotate prompt)
+  pauseReasons: new Set(),
+  paused: false,
+  deferred: [],
+  seqToken: 0,
+  resumeReplay: false
+};
+
+/* Timeout that waits while the game is paused, then runs on resume */
+function fgTimeout(fn, ms) {
+  return setTimeout(() => {
+    if (FG.paused) FG.deferred.push(fn);
+    else fn();
+  }, ms);
+}
+
+function fgPause(reason) {
+  if (!FG.running) return;
+  const wasActive = FG.pauseReasons.size > 0;
+  FG.pauseReasons.add(reason);
+  if (!wasActive) {
+    FG.paused = true;
+    FG.resumeReplay = FG.isShowingSequence; // replay the pattern if it was mid-display
+    sfx.stopBgm();
+  }
+}
+
+function fgResume(reason) {
+  if (!FG.pauseReasons.has(reason)) return;
+  FG.pauseReasons.delete(reason);
+  if (FG.pauseReasons.size > 0) return;
+  FG.paused = false;
+  const queued = FG.deferred.splice(0);
+  queued.forEach(fn => { try { fn(); } catch (e) {} });
+  if (FG.resumeReplay && FG.running) {
+    FG.resumeReplay = false;
+    playFocusSequence();
+  }
+  FG.resumeReplay = false;
+  if (FG.running) sfx.startBgm();
+}
+
+function buildFocusedLevel(lvl) {
+  const cfg = F_LEVEL_CONFIGS[lvl - 1];
+  FG.level = lvl;
+  FG.round = 1;
+  FG.timer = cfg.time;
+  FG.shields = 3;
+  FG.focusMeter = 20;
+  FG.mistakesThisLevel = 0;
+  FG.flawlessRounds = 0;
+  FG.roundsCleared = 0;
+  FG.isShowingSequence = false;
+  FG.playerIndex = 0;
+
+  // Render Grid
+  renderFocusGrid(cfg.rows, cfg.cols);
+
+  // Update HUD
+  document.getElementById('focused-hud-level').textContent = cfg.name;
+  updFocusedAttemptHud();
+  updFocusedTimerHud();
+  updFocusedMeterHud();
+  updFocusedShieldsHud();
+  updFocusedRoundHud();
+
+  fgTimeout(() => {
+    if (FG.running) startFocusedRound();
+  }, 400);
+}
+
+function renderFocusGrid(rows, cols) {
+  const container = document.getElementById('focus-grid-container');
+  if (!container) return;
+  container.innerHTML = '';
+  container.className = 'focus-grid rows-' + rows + ' cols-' + cols;
+  container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  const totalCells = rows * cols;
+  for (let i = 0; i < totalCells; i++) {
+    const cell = document.createElement('button');
+    cell.className = 'focus-cell';
+    cell.id = 'f-cell-' + i;
+    cell.dataset.index = i;
+    cell.setAttribute('aria-label', 'Focus node ' + (i + 1));
+    cell.innerHTML = `<span class="f-cell-inner"><span class="f-cell-dot"></span><span class="f-cell-num">${i + 1}</span></span>`;
+
+    cell.addEventListener('pointerdown', (e) => {
+      if (e.cancelable) e.preventDefault();
+      if (e.isPrimary === false) return; // ignore extra fingers
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      onFocusCellTap(i);
+    });
+    cell.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    container.appendChild(cell);
+  }
+}
+
+function updFocusedTimerHud() {
+  const el = document.getElementById('focused-hud-timer');
+  if (!el) return;
+  const t = Math.max(0, Math.ceil(FG.timer));
+  el.textContent = t;
+  el.classList.toggle('danger', t <= 8);
+}
+
+function updFocusedMeterHud() {
+  const f = document.getElementById('focused-m-fill');
+  const p = document.getElementById('focused-m-pct');
+  if (!f || !p) return;
+  const v = Math.min(100, Math.max(0, Math.round(FG.focusMeter)));
+  f.style.width = v + '%';
+  f.className = 'hud-m-fill' + (v >= 70 ? ' good' : v >= 40 ? ' warn' : '');
+  p.textContent = v + '%';
+}
+
+function updFocusedShieldsHud() {
+  const el = document.getElementById('focused-hud-shields');
+  if (!el) return;
+  let shieldsText = '';
+  for (let i = 0; i < 3; i++) {
+    shieldsText += (i < FG.shields) ? '✦ ' : '✧ ';
+  }
+  el.textContent = shieldsText.trim();
+  el.classList.toggle('crit-shields', FG.shields <= 1);
+}
+
+function updFocusedRoundHud() {
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  const el = document.getElementById('focused-hud-round');
+  if (el) {
+    el.textContent = 'ROUND ' + FG.round + '/' + cfg.roundsRequired;
+  }
+}
+
+function updFocusedAttemptHud() {
+  const el = document.getElementById('focused-hud-attempt');
+  if (el) {
+    el.textContent = 'ATTEMPT ' + (FG.sessionAttempt || 1) + '/2';
+    el.classList.toggle('second-attempt', (FG.sessionAttempt || 1) === 2);
+  }
+}
+
+function focusedToast(msg, type = '') {
+  const el = document.getElementById('focused-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+  if (FG.toastTO) clearTimeout(FG.toastTO);
+  FG.toastTO = setTimeout(() => el.className = '', 1800);
+}
+
+function focusedFlash(color) {
+  const el = document.getElementById('focused-flash');
+  if (!el) return;
+  el.style.background = color;
+  el.classList.add('show');
+  if (FG.flashTO) clearTimeout(FG.flashTO);
+  FG.flashTO = setTimeout(() => el.classList.remove('show'), 220);
+}
+
+function setFocusStatus(text, mode = '') {
+  const el = document.getElementById('focus-status-text');
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'focus-status-text' + (mode ? ' ' + mode : '');
+}
+
+function renderFocusStepDots(total, current) {
+  const dotsEl = document.getElementById('focus-step-dots');
+  if (!dotsEl) return;
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'f-step-dot' + (i < current ? ' filled' : (i === current ? ' active' : ''));
+    dotsEl.appendChild(dot);
+  }
+}
+
+function startFocusedRound() {
+  if (!FG.running) return;
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  const totalCells = cfg.rows * cfg.cols;
+  const seqLength = cfg.sequenceLengths[FG.round - 1];
+
+  // Generate sequence (no immediate repeated cells)
+  FG.sequence = [];
+  let prev = -1;
+  for (let i = 0; i < seqLength; i++) {
+    let next;
+    do {
+      next = Math.floor(Math.random() * totalCells);
+    } while (next === prev && totalCells > 1);
+    FG.sequence.push(next);
+    prev = next;
+  }
+
+  FG.playerIndex = 0;
+  updFocusedTimerHud();
+  renderFocusStepDots(seqLength, 0);
+
+  // Play sequence phase
+  playFocusSequence();
+}
+
+function playFocusSequence() {
+  FG.isShowingSequence = true;
+  const token = ++FG.seqToken;
+  setFocusStatus('✦ WATCH THE SEQUENCE CAREFULLY...', 'watching');
+  disableFocusGridInput(true);
+
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  let step = 0;
+
+  function showNextStep() {
+    if (token !== FG.seqToken) return;
+    if (!FG.running || !FG.isShowingSequence) return;
+    if (step >= FG.sequence.length) {
+      // Sequence completed, switch to input phase!
+      fgTimeout(() => {
+        if (token !== FG.seqToken) return;
+        FG.isShowingSequence = false;
+        disableFocusGridInput(false);
+        setFocusStatus('YOUR TURN — REPEAT SEQUENCE', 'ready');
+      }, cfg.gapDuration);
+      return;
+    }
+
+    const cellIdx = FG.sequence[step];
+    flashFocusCell(cellIdx, cfg.flashDuration, 'lit');
+
+    step++;
+    fgTimeout(showNextStep, cfg.flashDuration + cfg.gapDuration);
+  }
+
+  fgTimeout(showNextStep, 500);
+}
+
+function flashFocusCell(cellIdx, duration, cls = 'lit') {
+  const cell = document.getElementById('f-cell-' + cellIdx);
+  if (!cell) return;
+  if (cls === 'lit') {
+    sfx.playTone(360 + cellIdx * 35, 'sine', 0.14, 0.08);
+  }
+  cell.classList.add(cls);
+  setTimeout(() => {
+    cell.classList.remove(cls);
+  }, duration);
+}
+
+function disableFocusGridInput(disabled) {
+  const container = document.getElementById('focus-grid-container');
+  if (container) {
+    container.classList.toggle('input-disabled', disabled);
+  }
+}
+
+function onFocusCellTap(cellIdx) {
+  if (!FG.running || FG.paused || FG.isShowingSequence) return;
+
+  const targetIdx = FG.sequence[FG.playerIndex];
+
+  if (cellIdx === targetIdx) {
+    // CORRECT TAP
+    sfx.point();
+    flashFocusCell(cellIdx, 240, 'correct');
+    FG.playerIndex++;
+    FG.score += 35;
+    FG.focusMeter = Math.min(100, FG.focusMeter + 5);
+    updFocusedMeterHud();
+    renderFocusStepDots(FG.sequence.length, FG.playerIndex);
+
+    if (FG.playerIndex >= FG.sequence.length) {
+      // Round Complete!
+      handleFocusRoundSuccess();
+    }
+  } else {
+    // MISTAKE / DISTRACTION SLIP
+    sfx.damage();
+    flashFocusCell(cellIdx, 360, 'wrong');
+    FG.mistakesThisLevel++;
+    FG.shields--;
+    FG.focusMeter = Math.max(0, FG.focusMeter - 15);
+    updFocusedShieldsHud();
+    updFocusedMeterHud();
+    focusedToast('⚠ FOCUS SLIP! −1 SHIELD', 'warn');
+    focusedFlash('rgba(232, 120, 48, 0.2)');
+
+    if (FG.shields <= 0) {
+      focusedEndGame('shields');
+      return;
+    }
+
+    // Restrained replay to let player recover
+    setFocusStatus('FOCUS RECOVERY — WATCH AGAIN...', 'watching');
+    FG.playerIndex = 0;
+    renderFocusStepDots(FG.sequence.length, 0);
+    fgTimeout(() => {
+      if (FG.running) playFocusSequence();
+    }, 700);
+  }
+}
+
+function handleFocusRoundSuccess() {
+  disableFocusGridInput(true);
+  sfx.positive();
+  FG.roundsCleared++;
+  FG.score += 150;
+  FG.focusMeter = Math.min(100, FG.focusMeter + 15);
+  updFocusedMeterHud();
+  focusedToast('✓ ROUND COMPLETE! +150', 'teal');
+  setFocusStatus('EXCELLENT RETENTION!', 'success');
+
+  // Flash all cells softly in celebratory green
+  const container = document.getElementById('focus-grid-container');
+  if (container) {
+    container.classList.add('round-success-glow');
+    setTimeout(() => container.classList.remove('round-success-glow'), 500);
+  }
+
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  if (FG.round >= cfg.roundsRequired) {
+    fgTimeout(focusedEndLevel, 750);
+  } else {
+    FG.round++;
+    updFocusedRoundHud();
+    fgTimeout(() => {
+      if (FG.running) startFocusedRound();
+    }, 950);
+  }
+}
+
+function startFocusedTimer() {
+  if (FG.timerInterval) clearInterval(FG.timerInterval);
+  FG.timerInterval = setInterval(() => {
+    if (!FG.running || FG.paused || FG.isShowingSequence) return;
+    FG.timer -= 0.5;
+    updFocusedTimerHud();
+    if (FG.timer <= 0) {
+      clearInterval(FG.timerInterval);
+      FG.timerInterval = null;
+      focusedEndGame('time');
+    }
+  }, 500);
+}
+
+function startFocusedAmbientDistractions() {
+  if (FG.distractionInterval) clearInterval(FG.distractionInterval);
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  if (!cfg.hasDistractions) return;
+
+  FG.distractionInterval = setInterval(() => {
+    if (!FG.running || FG.paused || FG.isShowingSequence) return;
+    // Ambient peripheral pulse to test selective attention
+    const totalCells = cfg.rows * cfg.cols;
+    const randomCell = Math.floor(Math.random() * totalCells);
+    const cell = document.getElementById('f-cell-' + randomCell);
+    if (cell && !cell.classList.contains('lit')) {
+      cell.classList.add('distraction-pulse');
+      setTimeout(() => cell.classList.remove('distraction-pulse'), 300);
+    }
+  }, 3800);
+}
+
+function focusedEndLevel() {
+  FG.running = false;
+  sfx.win();
+  sfx.stopBgm();
+  if (FG.timerInterval) clearInterval(FG.timerInterval);
+  if (FG.distractionInterval) clearInterval(FG.distractionInterval);
+
+  const cfg = F_LEVEL_CONFIGS[FG.level - 1];
+  FG.levelStats.push({
+    level: FG.level,
+    rounds: cfg.roundsRequired,
+    mistakes: FG.mistakesThisLevel,
+    shieldsLeft: FG.shields,
+    finalMeter: FG.focusMeter,
+    timeRemaining: Math.ceil(FG.timer)
+  });
+  FG.levelsCompleted = Math.max(FG.levelsCompleted || 0, FG.level);
+
+  const titleEl = document.getElementById('focused-lc-title');
+  if (titleEl) titleEl.textContent = FG.level < 3 ? 'LEVEL ' + FG.level + ' COMPLETE' : 'LEVEL 3 MASTERED!';
+  const tagEl = document.getElementById('focused-lc-attempt-tag');
+  if (tagEl) tagEl.textContent = '✓ Cleared on Attempt ' + (FG.sessionAttempt || 1) + ' of 2';
+  document.getElementById('focused-lc-rounds').textContent = cfg.roundsRequired + '/' + cfg.roundsRequired;
+  document.getElementById('focused-lc-shields').textContent = FG.shields + '/3 Preserved';
+  document.getElementById('focused-lc-focus').textContent = Math.round(FG.focusMeter) + '%';
+  document.getElementById('focused-lc-time').textContent = Math.ceil(FG.timer) + 's';
+
+  const nextBtn = document.getElementById('focused-lc-next-btn');
+  if (nextBtn) {
+    if (FG.level >= 3) {
+      nextBtn.textContent = 'VIEW FINAL RESULTS →';
+      nextBtn.onclick = () => showFocusedFinalScore('focused-level-complete-screen');
+    } else {
+      nextBtn.textContent = 'NEXT LEVEL →';
+      nextBtn.onclick = nextFocusedLevel;
+    }
+  }
+  showScreen('focused-game-screen', 'focused-level-complete-screen', 450);
+}
+
+function handleFocusedNextClick() {
+  if (FG.level >= 3) {
+    showFocusedFinalScore('focused-level-complete-screen');
+  } else {
+    nextFocusedLevel();
+  }
+}
+
+function nextFocusedLevel() {
+  if (FG.level < 3) {
+    FG.level++;
+    showScreen('focused-level-complete-screen', 'focused-game-screen', 500);
+    setTimeout(() => {
+      FG.running = true;
+      buildFocusedLevel(FG.level);
+      startFocusedTimer();
+      startFocusedAmbientDistractions();
+      sfx.startBgm();
+    }, 620);
+  } else {
+    showFocusedFinalScore('focused-level-complete-screen');
+  }
+}
+
+function focusedEndGame(reason) {
+  FG.running = false;
+  sfx.lose();
+  sfx.stopBgm();
+  if (FG.timerInterval) { clearInterval(FG.timerInterval); FG.timerInterval = null; }
+  if (FG.distractionInterval) { clearInterval(FG.distractionInterval); FG.distractionInterval = null; }
+
+  if ((FG.sessionAttempt || 1) === 1) {
+    const titleEl = document.getElementById('focused-go-title');
+    const msgEl = document.getElementById('focused-go-attempt-msg');
+    const badgeEl = document.getElementById('focused-go-badge');
+
+    if (badgeEl) badgeEl.textContent = 'ATTEMPT 1 OF 2 FAILED';
+    if (reason === 'time') {
+      if (titleEl) titleEl.textContent = 'TIME RAN OUT';
+      if (msgEl) msgEl.innerHTML = 'You have <strong>1 retry remaining</strong> for this session.';
+    } else {
+      if (titleEl) titleEl.textContent = 'FOCUS SHIELDS DEPLETED';
+      if (msgEl) msgEl.innerHTML = 'You have <strong>1 retry remaining</strong> for this session.';
+    }
+
+    const retryBtn = document.getElementById('focused-go-retry-btn');
+    if (retryBtn) {
+      retryBtn.textContent = '↔ RETRY LEVEL (ATTEMPT 2/2)';
+      retryBtn.onclick = retryFocusedLevel;
+    }
+
+    showScreen('focused-game-screen', 'focused-game-over-screen', 450);
+  } else {
+    // Retry already used: end session and show results
+    const retryBtn = document.getElementById('focused-go-retry-btn');
+    if (retryBtn) {
+      retryBtn.textContent = 'VIEW RESULTS →';
+      retryBtn.onclick = () => showFocusedFinalScore('focused-game-over-screen');
+    }
+    showFocusedFinalScore('focused-game-screen');
+  }
+}
+
+function retryFocusedLevel() {
+  FG.sessionAttempt = 2;
+  showScreen('focused-game-over-screen', 'focused-game-screen', 500);
+  setTimeout(() => {
+    FG.running = true;
+    buildFocusedLevel(FG.level);
+    startFocusedTimer();
+    startFocusedAmbientDistractions();
+    sfx.startBgm();
+  }, 620);
+}
+
+function calcFocusedScores() {
+  const totalRounds = FG.levelStats ? FG.levelStats.reduce((sum, s) => sum + (s.rounds || 0), 0) : 0;
+  const totalMistakes = FG.levelStats ? FG.levelStats.reduce((sum, s) => sum + (s.mistakes || 0), 0) : 0;
+  const avgFocus = (FG.levelStats && FG.levelStats.length > 0)
+    ? (FG.levelStats.reduce((sum, s) => sum + (s.finalMeter || 0), 0) / FG.levelStats.length)
+    : 40;
+
+  // Cognitive Drift Score formula (0 - 100, lower is better):
+  const driftScore = Math.max(0, Math.min(100, Math.round(totalMistakes * 12 + (100 - avgFocus) * 0.4)));
+  const masteryScore = Math.max(0, Math.min(100, 100 - driftScore));
+
+  return {
+    driftScore,
+    masteryScore,
+    totalRounds,
+    totalMistakes,
+    shieldsPreserved: FG.levelStats ? FG.levelStats.reduce((sum, s) => sum + (s.shieldsLeft || 0), 0) : 0
+  };
+}
+
+function showFocusedFinalScore(fromScreenId) {
+  FG.running = false;
+  sfx.stopBgm();
+  if (FG.timerInterval) { clearInterval(FG.timerInterval); FG.timerInterval = null; }
+  if (FG.distractionInterval) { clearInterval(FG.distractionInterval); FG.distractionInterval = null; }
+
+  const scores = calcFocusedScores();
+  const ds = scores.driftScore;
+  const ms = scores.masteryScore;
+
+  const lvlBadge = document.getElementById('focused-fs-levels-badge');
+  const lvlText = document.getElementById('focused-fs-levels');
+  const completed = FG.levelsCompleted || 0;
+  if (lvlText) lvlText.textContent = completed + ' / 3 LEVELS COMPLETED';
+  if (lvlBadge) {
+    lvlBadge.className = 'fs-levels-badge' + (completed === 3 ? '' : completed > 0 ? ' partial' : ' needs-work');
+  }
+
+  const titleEl = document.getElementById('focused-fs-title');
+  if (completed === 3) {
+    if (titleEl) titleEl.textContent = 'FOCUS RESTORED';
+  } else if (completed > 0) {
+    if (titleEl) titleEl.textContent = 'PROGRESS MADE';
+  } else {
+    if (titleEl) titleEl.textContent = 'NEEDS IMPROVEMENT';
+  }
+
+  const otScoreEl = document.getElementById('focused-fs-ot-score');
+  if (otScoreEl) otScoreEl.innerHTML = ds + '<span class="fs-score-out"> / 100</span>';
+  const fcScoreEl = document.getElementById('focused-fs-fc-score');
+  if (fcScoreEl) fcScoreEl.innerHTML = ms + '<span class="fs-score-out"> / 100</span>';
+  const otBarEl = document.getElementById('focused-fs-ot-bar');
+  if (otBarEl) otBarEl.style.width = ds + '%';
+  const fcBarEl = document.getElementById('focused-fs-fc-bar');
+  if (fcBarEl) fcBarEl.style.width = ms + '%';
+
+  const otBadge = document.getElementById('focused-fs-ot-badge');
+  const fcBadge = document.getElementById('focused-fs-fc-badge');
+  const msgEl = document.getElementById('focused-fs-message');
+  const quoteEl = document.getElementById('focused-fs-quote');
+
+  if (ds <= 28) {
+    if (otBadge) { otBadge.textContent = '0–28 LOW COGNITIVE DRIFT'; otBadge.className = 'fs-score-badge badge-ot-low'; }
+    if (fcBadge) { fcBadge.textContent = 'DEEP FLOW STATE'; fcBadge.className = 'fs-score-badge badge-fc-high'; }
+    if (msgEl) msgEl.textContent = 'You held complex attention patterns in working memory and resisted cognitive distractions with remarkable composure.';
+    if (quoteEl) quoteEl.textContent = '"Where attention goes, energy flows. Deep focus creates mastery."';
+  } else if (ds <= 58) {
+    if (otBadge) { otBadge.textContent = '29–58 MODERATE DRIFT'; otBadge.className = 'fs-score-badge badge-ot-mod'; }
+    if (fcBadge) { fcBadge.textContent = 'STEADY ATTENTION'; fcBadge.className = 'fs-score-badge badge-fc-med'; }
+    if (msgEl) msgEl.textContent = 'A few peripheral impulses challenged your memory trail. Practising single-tasking during study sessions will solidify your retention.';
+    if (quoteEl) quoteEl.textContent = '"Focus is the decision to ignore what does not matter."';
+  } else {
+    if (otBadge) { otBadge.textContent = '59–100 HIGH COGNITIVE DRIFT'; otBadge.className = 'fs-score-badge badge-ot-high'; }
+    if (fcBadge) { fcBadge.textContent = 'NEEDS ATTENTION PRACTICE'; fcBadge.className = 'fs-score-badge badge-fc-mod'; }
+    if (msgEl) msgEl.textContent = 'Multi-tasking habits and digital noise can wear down sustained attention. Take intentional screen-free breaks to recharge.';
+    if (quoteEl) quoteEl.textContent = '"Silence the noise to hear the signal."';
+  }
+
+  const rEl = document.getElementById('focused-fs-rounds');
+  if (rEl) rEl.textContent = scores.totalRounds;
+  const mEl = document.getElementById('focused-fs-mistakes');
+  if (mEl) mEl.textContent = scores.totalMistakes;
+  const sEl = document.getElementById('focused-fs-shields');
+  if (sEl) sEl.textContent = scores.shieldsPreserved + ' Preserved';
+  const scEl = document.getElementById('focused-fs-score');
+  if (scEl) scEl.textContent = (scores.totalRounds * 30 - scores.totalMistakes * 10) + ' Pts';
+
+  const activeScreen = (typeof fromScreenId === 'string' && fromScreenId)
+    || (document.querySelector('.screen.active') ? document.querySelector('.screen.active').id : null)
+    || 'focused-level-complete-screen';
+
+  showScreen(activeScreen, 'focused-final-score-screen', 450);
+}
+
+function openFocusedGuidanceScreen() {
+  showScreen('focused-final-score-screen', 'focused-guidance-screen', 400);
+}
+
+function playFocusedAgain() {
+  FG.level = 1;
+  FG.sessionAttempt = 1;
+  FG.levelsCompleted = 0;
+  FG.levelStats = [];
+  const activeScreen = document.getElementById('focused-guidance-screen') && document.getElementById('focused-guidance-screen').classList.contains('active')
+    ? 'focused-guidance-screen'
+    : 'focused-final-score-screen';
+  showScreen(activeScreen, 'focused-game-screen', 500);
+  setTimeout(() => {
+    FG.running = true;
+    buildFocusedLevel(1);
+    startFocusedTimer();
+    startFocusedAmbientDistractions();
+    sfx.startBgm();
+  }, 620);
+}
+
+function startFocusedChallenge() {
+  FG.level = 1;
+  FG.sessionAttempt = 1;
+  FG.levelsCompleted = 0;
+  FG.levelStats = [];
+  showScreen('focused-instructions-screen', 'focused-game-screen');
+  FG.running = true;
+  buildFocusedLevel(1);
+  startFocusedTimer();
+  startFocusedAmbientDistractions();
+  sfx.startBgm();
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('button, .gbtn, [data-quit-logo], #focused-logo-btn')) {
+    sfx.btnClick();
+  }
+});
+
+/* ==============================================
+   MOBILE & MODAL CONTROLS: QUIT MODAL & GESTURES
+   ============================================== */
+(function () {
+  /* ---- Quit confirmation modal ---- */
+  const logoBtn = document.getElementById('focused-logo-btn');
+  const modal = document.getElementById('focused-quit-modal');
+  const btnContinue = document.getElementById('focused-quit-continue');
+  const btnQuit = document.getElementById('focused-quit-confirm');
+
+  function openQuitModal() {
+    if (!modal || !modal.hidden) return;
+    fgPause('modal');
+    modal.hidden = false;
+    if (btnContinue) btnContinue.focus({ preventScroll: true });
+  }
+  function closeQuitModal() {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    fgResume('modal');
+  }
+  function quitToWelcome() {
+    FG.running = false;
+    sfx.stopBgm();
+    if (FG.timerInterval) clearInterval(FG.timerInterval);
+    if (FG.distractionInterval) clearInterval(FG.distractionInterval);
+    window.location.href = 'index.html';
+  }
+
+  if (logoBtn) logoBtn.addEventListener('click', openQuitModal);
+  if (btnContinue) btnContinue.addEventListener('click', closeQuitModal);
+  /* Browser Back Button -> Custom RE:SET Quit Modal */
+  try {
+    history.pushState({ inGame: true }, document.title, window.location.href);
+  } catch(e) {}
+
+  window.addEventListener('popstate', (e) => {
+    try {
+      history.pushState({ inGame: true }, document.title, window.location.href);
+    } catch(err) {}
+    openQuitModal();
+  });
+
+  if (btnQuit) btnQuit.addEventListener('click', quitToWelcome);
+  document.addEventListener('keydown', (e) => {
+    if (!modal || modal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeQuitModal(); }
+    else if (e.key === 'Tab') {
+      const items = [btnContinue, btnQuit];
+      const idx = items.indexOf(document.activeElement);
+      e.preventDefault();
+      const next = e.shiftKey ? (idx <= 0 ? items.length - 1 : idx - 1) : (idx + 1) % items.length;
+      items[next].focus({ preventScroll: true });
+    }
+  });
+
+  /* Block page scroll / pinch-zoom gestures while playing */
+  document.addEventListener('touchmove', (e) => {
+    const gs = document.getElementById('focused-game-screen');
+    if (gs && gs.classList.contains('active') && e.cancelable) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gesturestart', (e) => {
+    const gs = document.getElementById('focused-game-screen');
+    if (gs && gs.classList.contains('active') && e.cancelable) e.preventDefault();
+  });
+})();
+
+// Auto-start when ?start=1 is present
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.search.includes('start=1') || window.location.hash === '#play') {
+    startFocusedChallenge();
+  }
+});
+
+</script>
+</body>
+</html>

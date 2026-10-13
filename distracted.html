@@ -1,0 +1,3842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0E1D42">
+  <title>RE:SET — The Distracted: Stay on Track</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Press+Start+2P&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #152B4A;
+  --navy-light: #1E3A5F;
+  --teal: #2ECDA6;
+  --teal-dark: #24A888;
+  --orange: #E87830;
+  --yellow: #FFCA28;
+  --blue: #2196F3;
+  --green: #00C853;
+  --red: #e53935;
+  --bg: #FFFFFF;
+  --white: #FFFFFF;
+  --text-primary: #152B4A;
+  --text-secondary: rgba(21,43,74,0.5);
+  --border-light: rgba(21,43,74,0.1);
+  --border-med: rgba(21,43,74,0.16);
+  --shadow-sm: 0 1px 3px rgba(21,43,74,0.06), 0 1px 2px rgba(21,43,74,0.04);
+  --shadow-md: 0 4px 16px rgba(21,43,74,0.08), 0 2px 6px rgba(21,43,74,0.04);
+  --shadow-lg: 0 12px 40px rgba(21,43,74,0.1), 0 4px 12px rgba(21,43,74,0.06);
+  --shadow-teal: 0 4px 20px rgba(46,205,166,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter','Space Grotesk',sans-serif;
+  background: #fff;
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M4,2 L4,24 L9,19 L14,28 L18,26 L13,17 L22,17 Z' fill='%23FFCA28' stroke='%23152B4A' stroke-width='2' stroke-linejoin='miter'/%3E%3C/svg%3E") 4 2, auto;
+}
+a, button, .char-card, [onclick] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M4,2 L4,24 L9,19 L14,28 L18,26 L13,17 L22,17 Z' fill='%23FFCA28' stroke='%23152B4A' stroke-width='2.5' stroke-linejoin='miter'/%3E%3C/svg%3E") 4 2, pointer;
+}
+
+/* ===== GRID BACKGROUND ===== */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='70' height='70' fill='none'/%3E%3Cline x1='70' y1='0' x2='70' y2='70' stroke='rgba(33,150,243,0.18)' stroke-width='1'/%3E%3Cline x1='0' y1='70' x2='70' y2='70' stroke='rgba(33,150,243,0.18)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 70px 70px;
+}
+
+/* ===== PIXEL DECOR ===== */
+.pixel-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.pix { position: absolute; border-radius: 1px; opacity: 0; animation: pixFloat 20s ease-in-out infinite; }
+@keyframes pixFloat {
+  0%,100% { opacity:0; transform:translateY(0) rotate(0deg); }
+  15% { opacity:.45; } 50% { opacity:.35; transform:translateY(-30px) rotate(45deg); } 85% { opacity:.45; }
+}
+
+/* ===== SCREENS ===== */
+.screen { display:none !important; flex-direction:column; align-items:center; min-height:100vh; width:100%; position:relative; z-index:1; }
+.screen.active { display:flex !important; }
+.screen.fade-in { animation: screenIn .35s ease forwards; }
+@keyframes screenIn { from{opacity:0} to{opacity:1} }
+
+/* ===== ANIM HELPERS ===== */
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== TRANSITION OVERLAY ===== */
+.transition-overlay { position:fixed;inset:0;z-index:100;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s ease; }
+.transition-overlay.active { opacity:1;pointer-events:all; }
+.t-spinner { width:40px;height:40px;border:3px solid var(--border-light);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ===== WELCOME SCREEN ===== */
+#welcome-screen { justify-content:center;align-items:center;padding:40px 24px;text-align:center; }
+.welcome-container { display:flex;flex-direction:column;align-items:center;max-width:560px; }
+.welcome-logo { margin-bottom:40px;animation:wlEnter 1s cubic-bezier(.22,1,.36,1) forwards; }
+.welcome-logo img { height:clamp(100px,20vw,160px);width:auto;filter:drop-shadow(0 4px 12px rgba(21,43,74,.08)); }
+@keyframes wlEnter { from{opacity:0;transform:scale(.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.welcome-title { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:700;letter-spacing:3px;color:var(--navy);margin-bottom:14px;animation:fadeUp .7s ease .3s both; }
+.welcome-subtitle { font-size:clamp(.95rem,2vw,1.1rem);color:var(--text-secondary);line-height:1.7;margin-bottom:48px;animation:fadeUp .7s ease .5s both; }
+.btn-enter { display:inline-flex;align-items:center;padding:16px 52px;font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#fff;background:var(--navy);border:2px solid var(--navy);border-radius:6px;transition:all .3s ease;animation:fadeUp .7s ease .7s both; }
+.btn-enter:hover { background:transparent;color:var(--navy);box-shadow:var(--shadow-md); }
+.btn-enter:active { transform:scale(.97); }
+.corner-decor { position:absolute;z-index:0;opacity:.12; }
+.corner-decor.tl{top:30px;left:30px} .corner-decor.tr{top:30px;right:30px}
+.corner-decor.bl{bottom:30px;left:30px} .corner-decor.br{bottom:30px;right:30px}
+
+/* ===== SELECTION SCREEN ===== */
+#selection-screen { padding-bottom:60px; }
+.sel-header { text-align:center;padding:40px 20px 8px;animation:fadeUp .6s ease forwards; }
+.sel-logo { margin-bottom:8px; }
+.sel-logo img { height:90px;width:auto;filter:drop-shadow(0 2px 8px rgba(21,43,74,.06));transition:transform .3s ease; }
+.sel-logo:hover img { transform:scale(1.04); }
+.sel-tagline { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;letter-spacing:2px;color:var(--navy);margin-bottom:8px;animation:fadeUp .6s ease .15s both; }
+.sel-subtitle { font-size:clamp(.9rem,1.8vw,1rem);color:var(--text-secondary);letter-spacing:.5px;animation:fadeUp .6s ease .25s both; }
+.divider { width:50px;height:3px;background:var(--teal);margin:20px auto 0;border-radius:2px;animation:fadeUp .6s ease .35s both; }
+.characters-section { width:100%;max-width:1100px;padding:28px 24px 20px;margin:0 auto;animation:fadeUp .6s ease .4s both; }
+.characters-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:22px; }
+.char-card { position:relative;background:#fff;border:2px solid var(--border-light);border-radius:14px;padding:28px 14px 22px;display:flex;flex-direction:column;align-items:center;transition:all .35s cubic-bezier(.25,.8,.25,1);box-shadow:var(--shadow-sm); }
+.char-card:hover { transform:translateY(-8px);border-color:var(--teal);box-shadow:var(--shadow-lg),0 0 0 1px var(--teal); }
+.char-card.selected { transform:translateY(-8px);border-color:var(--navy);box-shadow:var(--shadow-lg),0 0 0 2px var(--navy); }
+.char-select-arrow { position:absolute;top:12px;right:12px;width:26px;height:30px;opacity:0;transform:scale(.5) rotate(-10deg);transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:3;filter:drop-shadow(0 2px 4px rgba(21,43,74,.15)); }
+.char-card.selected .char-select-arrow { opacity:1;transform:scale(1) rotate(0deg); }
+.char-top-accent { position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:3px;border-radius:0 0 3px 3px;transition:width .4s ease; }
+.char-card:hover .char-top-accent,.char-card.selected .char-top-accent { width:60%; }
+.char-img-wrap { position:relative;width:100%;height:210px;display:flex;align-items:center;justify-content:center;margin-bottom:14px; }
+.char-img-wrap img { max-height:195px;max-width:100%;width:auto;object-fit:contain;image-rendering:auto;transition:transform .4s cubic-bezier(.25,.8,.25,1);filter:drop-shadow(0 4px 12px rgba(21,43,74,.1)); }
+.char-card:hover .char-img-wrap img,.char-card.selected .char-img-wrap img { transform:scale(1.06) translateY(-4px); }
+.char-name { font-family:'Space Grotesk',sans-serif;font-size:clamp(.78rem,1.3vw,.95rem);font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--navy);transition:color .3s ease; }
+.char-card:hover .char-name { color:var(--teal-dark); }
+.char-underline { width:24px;height:2px;margin-top:10px;border-radius:2px;transition:width .4s ease; }
+.char-card:hover .char-underline,.char-card.selected .char-underline { width:40px; }
+.selection-panel { width:100%;max-width:680px;margin:0 auto;padding:0 24px 20px;opacity:0;transform:translateY(24px);transition:all .45s cubic-bezier(.25,.8,.25,1);pointer-events:none; }
+.selection-panel.visible { opacity:1;transform:translateY(0);pointer-events:all; }
+.sel-inner { background:#fff;border:2px solid var(--border-med);border-radius:14px;padding:32px 36px;display:flex;align-items:center;gap:28px;box-shadow:var(--shadow-md);position:relative; }
+.sel-char-img { flex-shrink:0; }
+.sel-char-img img { height:130px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(21,43,74,.1));animation:selBounce .45s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes selBounce { from{opacity:0;transform:scale(.7) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.sel-info { flex:1; }
+.sel-name { font-family:'Space Grotesk',sans-serif;font-size:clamp(1.1rem,2.2vw,1.45rem);font-weight:700;letter-spacing:2px;color:var(--navy);margin-bottom:8px; }
+.sel-desc { font-size:clamp(.85rem,1.5vw,.92rem);color:var(--text-secondary);line-height:1.65;margin-bottom:20px; }
+.btn-start { display:inline-flex;align-items:center;gap:12px;padding:13px 32px;font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff;background:var(--teal);border:2px solid var(--teal);border-radius:6px;transition:all .3s ease; }
+.btn-start:hover { background:var(--teal-dark);border-color:var(--teal-dark);box-shadow:var(--shadow-teal); }
+.btn-start:active { transform:scale(.97); }
+.btn-start .arrow { display:inline-block;transition:transform .3s ease;font-size:1.1rem; }
+.btn-start:hover .arrow { transform:translateX(4px); }
+
+/* ===== COMING SOON ===== */
+#coming-soon-screen { justify-content:center;align-items:center;padding:40px 24px;text-align:center; }
+.cs-container { max-width:520px;width:100%;display:flex;flex-direction:column;align-items:center; }
+.cs-char-img { margin-bottom:36px;animation:csIn .7s cubic-bezier(.34,1.56,.64,1) .3s both; }
+.cs-char-img img { height:clamp(150px,28vw,220px);width:auto;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(21,43,74,.12)); }
+@keyframes csIn { from{opacity:0;transform:scale(.6) translateY(30px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.cs-badge { display:inline-flex;align-items:center;gap:10px;padding:8px 20px;border-radius:50px;background:#fff;border:1.5px solid var(--border-light);margin-bottom:24px;box-shadow:var(--shadow-sm);animation:fadeUp .5s ease .5s both; }
+.cs-dot { width:8px;height:8px;border-radius:50%;background:var(--teal);animation:dotP 1.5s ease infinite; }
+@keyframes dotP { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,205,166,.4)} 50%{opacity:.5;box-shadow:0 0 0 6px rgba(46,205,166,0)} }
+.cs-badge-text { font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--navy); }
+.cs-title { font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:700;letter-spacing:4px;color:var(--navy);margin-bottom:14px;animation:fadeUp .6s ease .7s both; }
+.cs-subtitle { font-size:clamp(.92rem,2vw,1.05rem);color:var(--text-secondary);line-height:1.7;max-width:400px;margin-bottom:36px;animation:fadeUp .6s ease .9s both; }
+.cs-progress-wrap { width:100%;max-width:300px;margin-bottom:36px;animation:fadeUp .6s ease 1s both; }
+.cs-progress-track { width:100%;height:4px;border-radius:4px;background:var(--border-light);overflow:hidden; }
+.cs-progress-bar { height:100%;width:0%;border-radius:4px;background:var(--teal);animation:pFill 2.5s ease 1.3s forwards; }
+@keyframes pFill { 0%{width:0%} 60%{width:72%} 80%{width:80%} 100%{width:88%} }
+.btn-back { display:inline-flex;align-items:center;gap:10px;padding:12px 28px;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);background:#fff;border:1.5px solid var(--border-light);border-radius:6px;transition:all .3s ease;animation:fadeUp .6s ease 1.1s both; }
+.btn-back:hover { color:var(--navy);border-color:var(--navy);box-shadow:var(--shadow-sm); }
+.btn-back .arrow-back { transition:transform .3s ease; }
+.btn-back:hover .arrow-back { transform:translateX(-4px); }
+
+/* ===================================================
+   GAME SCREENS — THE OVERTHINKER
+   =================================================== */
+
+/* Prevent any horizontal overflow */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+/* Shared game buttons — 48px min-height for mobile touch accessibility */
+.gbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  box-sizing: border-box;
+}
+.gbtn:active { transform: scale(0.97); }
+.gbtn-navy { background: #0E1D42; color: #fff; border-color: #0E1D42; }
+.gbtn-navy:hover { background: transparent; color: #0E1D42; }
+.gbtn-teal { background: var(--teal); color: #0E1D42; border-color: var(--teal); }
+.gbtn-teal:hover { background: var(--teal-dark); border-color: var(--teal-dark); box-shadow: var(--shadow-teal); }
+.gbtn-outline { background: transparent; color: #0E1D42; border-color: var(--border-med); }
+.gbtn-outline:hover { border-color: #0E1D42; box-shadow: var(--shadow-sm); }
+
+/* ===== INSTRUCTIONS SCREEN ===== */
+#game-instructions-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(16px, 4vw, 36px) clamp(12px, 3vw, 20px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+.instr-wrap {
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.6s ease both;
+  box-sizing: border-box;
+}
+.instr-header {
+  background: #0E1D42;
+  padding: clamp(20px, 4vw, 28px) clamp(20px, 5vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+}
+.instr-logo img {
+  height: clamp(30px, 6vw, 38px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 8px;
+}
+.instr-char img {
+  height: clamp(75px, 16vw, 96px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,.35));
+}
+.instr-title-block { flex: 1; min-width: 0; }
+.instr-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 4px; }
+.instr-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 4.5vw, 2.2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+.instr-hook { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: rgba(255,255,255,.7); font-style: italic; }
+.instr-body { padding: clamp(20px, 4vw, 32px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.instr-desc { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: var(--text-secondary); line-height: 1.65; margin-bottom: 22px; border-left: 3px solid var(--teal); padding-left: 14px; }
+.instr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+.instr-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 14px; }
+.instr-card-label { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
+.instr-card-value { font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700; color: #0E1D42; line-height: 1.4; }
+.instr-levels { display: flex; gap: 10px; margin-bottom: 26px; }
+.instr-lvl { flex: 1; padding: 12px 10px; border-radius: 8px; text-align: center; border: 1.5px solid var(--border-light); background: #fff; }
+.instr-lvl-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+.instr-lvl-name { font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700; color: #0E1D42; }
+.instr-lvl-time { font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
+.instr-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+
+/* ===== GAME SCREEN ===== */
+#game-screen {
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: 100vh;
+  background: #fff;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+.game-topbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 2px solid var(--border-light);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  box-sizing: border-box;
+}
+.gtb-logo img {
+  height: clamp(26px, 5vw, 34px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.gtb-center { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gtb-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; background: #0E1D42; padding: 5px 12px; border-radius: 4px; }
+.hud-attempt-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; background: rgba(14,29,66,.08); border: 1.5px solid var(--border-med); padding: 4px 10px; border-radius: 4px; transition: all 0.3s ease; }
+.hud-attempt-badge.second-attempt { color: var(--orange); background: rgba(232,120,48,.12); border-color: var(--orange); }
+.gtb-right { display: flex; align-items: center; gap: 16px; }
+.hud-timer { display: flex; align-items: center; gap: 6px; }
+.hud-t-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.hud-t-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.35rem; font-weight: 700; color: #0E1D42; min-width: 36px; text-align: right; transition: color 0.3s ease; }
+.hud-t-val.danger { color: var(--red); animation: tPulse 0.5s ease infinite alternate; }
+@keyframes tPulse { from{opacity:1} to{opacity:0.45} }
+.hud-meter { display: flex; align-items: center; gap: 6px; }
+.hud-m-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.hud-m-track { width: 75px; height: 7px; border-radius: 4px; background: var(--border-light); overflow: hidden; }
+.hud-m-fill { height: 100%; width: 0%; border-radius: 4px; background: var(--teal); transition: width 0.4s ease, background 0.4s ease; }
+.hud-m-fill.warn { background: var(--orange); }
+.hud-m-fill.crit { background: var(--red); }
+.hud-m-pct { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; color: #0E1D42; min-width: 32px; }
+
+/* Canvas container — touch-action: none prevents scrolling while swiping */
+.game-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#game-canvas {
+  display: block;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Flash overlay & Toast */
+.game-flash { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
+.game-flash.show { opacity: 1; }
+#penalty-toast { position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-16px); background: #0E1D42; color: #fff; padding: 9px 20px; border-radius: 6px; font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; white-space: nowrap; z-index: 60; opacity: 0; pointer-events: none; transition: all 0.3s ease; box-shadow: var(--shadow-md); }
+#penalty-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#penalty-toast.warn { background: var(--orange); }
+#penalty-toast.danger { background: var(--red); }
+.mobile-controls { display: none !important; }
+
+/* ===== LEVEL COMPLETE ===== */
+#level-complete-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px);
+  text-align: center;
+  box-sizing: border-box;
+}
+.lc-wrap {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.lc-head {
+  background: #0E1D42;
+  padding: clamp(20px, 4vw, 26px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+.lc-logo img {
+  height: clamp(30px, 7vw, 40px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.lc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lc-check { width: 38px; height: 38px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; color: #0E1D42; font-weight: 700; }
+.lc-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.2rem, 3.8vw, 1.7rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; line-height: 1.2; }
+.lc-body { padding: clamp(20px, 4vw, 28px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.lc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.lc-stat { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 14px; text-align: left; }
+.lc-stat-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 3px; }
+.lc-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: #0E1D42; }
+.lc-attempt-tag { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; background: rgba(46,205,166,.15); border: 1px solid var(--teal); border-radius: 6px; padding: 6px 14px; margin-bottom: 18px; }
+.lc-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+/* ===== GAME OVER ===== */
+#game-over-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px);
+  text-align: center;
+  box-sizing: border-box;
+}
+.go-wrap {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.go-head {
+  background: #0E1D42;
+  padding: clamp(22px, 4vw, 28px) clamp(20px, 5vw, 36px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.go-logo img {
+  height: clamp(30px, 7vw, 40px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 8px;
+}
+.go-icon { font-size: 2.2rem; margin-bottom: 8px; }
+.go-badge { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); background: rgba(232,120,48,.18); border: 1px solid var(--orange); padding: 4px 14px; border-radius: 20px; margin-bottom: 10px; }
+.go-badge.danger { color: #ff5252; background: rgba(229,57,53,.2); border-color: #ff5252; }
+.go-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.3rem, 4vw, 1.9rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+.go-sub { font-size: clamp(0.82rem, 2.5vw, 0.88rem); color: rgba(255,255,255,.7); line-height: 1.55; }
+.go-body { padding: clamp(20px, 4vw, 28px) clamp(18px, 4vw, 32px); box-sizing: border-box; }
+.go-attempt-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; text-align: center; }
+.go-attempt-msg { font-size: clamp(0.85rem, 2.5vw, 0.9rem); color: #0E1D42; line-height: 1.55; font-weight: 500; }
+.go-m-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 7px; text-align: left; }
+.go-m-bar { width: 100%; height: 7px; border-radius: 4px; background: var(--border-light); overflow: hidden; margin-bottom: 22px; }
+.go-m-fill { height: 100%; border-radius: 4px; background: var(--red); transition: width 0.8s cubic-bezier(.25,.8,.25,1); }
+.go-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* ===== FINAL RESULTS ===== */
+#final-score-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px) 60px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.fs-wrap {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  box-sizing: border-box;
+}
+.fs-head {
+  background: #0E1D42;
+  padding: clamp(24px, 4vw, 30px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.fs-logo img {
+  height: clamp(40px, 9vw, 56px);
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+}
+.fs-super { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 5px; }
+.fs-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; line-height: 1.25; }
+.fs-body { padding: clamp(22px, 4vw, 32px) clamp(18px, 4vw, 36px) clamp(26px, 4vw, 36px); box-sizing: border-box; }
+.fs-char-img { margin-bottom: 16px; }
+.fs-char-img img { height: clamp(90px, 18vw, 120px); width: auto; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(14,29,66,.12)); }
+
+/* Dual Score Cards */
+.fs-dual-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.fs-score-card { background: #f8f9fb; border: 2px solid var(--border-light); border-radius: 14px; padding: clamp(14px, 3vw, 18px) clamp(12px, 3vw, 16px); text-align: left; display: flex; flex-direction: column; }
+.fs-score-card.fs-score-ot { border-color: rgba(33,150,243,.35); background: linear-gradient(180deg,#ffffff 0%,rgba(33,150,243,.04) 100%); }
+.fs-score-card.fs-score-fc { border-color: rgba(46,205,166,.35); background: linear-gradient(180deg,#ffffff 0%,rgba(46,205,166,.04) 100%); }
+.fs-score-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+.fs-score-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); }
+.fs-score-badge { font-family: 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.badge-ot-low { background: rgba(46,205,166,.18); color: var(--teal-dark); border: 1px solid var(--teal); }
+.badge-ot-mod { background: rgba(232,120,48,.18); color: var(--orange); border: 1px solid var(--orange); }
+.badge-ot-high { background: rgba(229,57,53,.18); color: var(--red); border: 1px solid var(--red); }
+.badge-fc-high { background: rgba(46,205,166,.18); color: var(--teal-dark); border: 1px solid var(--teal); }
+.badge-fc-med { background: rgba(33,150,243,.18); color: var(--blue); border: 1px solid var(--blue); }
+.fs-score-card .fs-score-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #0E1D42; margin-bottom: 4px; }
+.fs-score-card .fs-score-num { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.8rem, 4.5vw, 2.5rem); font-weight: 700; color: #0E1D42; line-height: 1.1; margin-bottom: 8px; }
+.fs-score-out { font-size: 1rem; color: var(--text-secondary); font-weight: 500; }
+.fs-score-bar-wrap { width: 100%; height: 6px; border-radius: 3px; background: var(--border-light); overflow: hidden; margin-bottom: 8px; }
+.fs-score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.fs-score-ot .fs-score-bar-fill { background: linear-gradient(90deg,var(--teal),var(--orange),var(--red)); }
+.fs-score-fc .fs-score-bar-fill { background: linear-gradient(90deg,var(--blue),var(--teal)); }
+.fs-score-hint { font-size: 0.73rem; color: var(--text-secondary); line-height: 1.35; }
+
+/* Results Narrative */
+.fs-message-card { background: #fff; border: 1.5px solid var(--border-light); border-radius: 12px; padding: clamp(14px, 3vw, 18px) clamp(14px, 3vw, 20px); margin-bottom: 18px; text-align: left; }
+.fs-message { font-size: clamp(0.88rem, 2.5vw, 0.95rem); color: #0E1D42; line-height: 1.6; margin-bottom: 10px; font-weight: 500; }
+.fs-quote { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: var(--text-secondary); line-height: 1.6; font-style: italic; border-left: 3px solid var(--teal); padding-left: 12px; }
+.fs-breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+.fs-stat { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 8px; padding: 10px 6px; text-align: center; }
+.fs-stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: #0E1D42; }
+.fs-stat-lbl { font-size: 0.58rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); margin-top: 2px; }
+.fs-disclaimer { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px; font-style: italic; text-align: center; }
+.fs-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== OVERTHINKING GUIDANCE SCREEN ===== */
+#guidance-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(24px, 4vw, 40px) clamp(14px, 3vw, 20px) 60px;
+  text-align: center;
+  box-sizing: border-box;
+}
+.guide-wrap {
+  width: 100%;
+  max-width: 820px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+  text-align: left;
+  box-sizing: border-box;
+}
+.guide-head {
+  background: #0E1D42;
+  padding: clamp(24px, 4vw, 32px) clamp(20px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.guide-logo img {
+  height: clamp(38px, 8vw, 50px);
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+}
+.guide-tag { font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+.guide-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: 2.5px; color: #fff; margin-bottom: 8px; line-height: 1.25; }
+.guide-sub { font-size: clamp(0.85rem, 2.5vw, 0.92rem); color: rgba(255,255,255,.7); line-height: 1.6; max-width: 580px; }
+.guide-body { padding: clamp(22px, 4vw, 34px) clamp(18px, 4vw, 36px); box-sizing: border-box; }
+.guide-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 22px; }
+.guide-card { background: #f8f9fb; border: 1.5px solid var(--border-light); border-radius: 12px; padding: clamp(14px, 3vw, 18px) clamp(14px, 3vw, 20px); transition: transform 0.25s ease, border-color 0.25s ease; box-sizing: border-box; }
+.guide-card:hover { transform: translateY(-2px); border-color: var(--teal); }
+.guide-num { font-family: 'Space Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: var(--teal); margin-bottom: 6px; }
+.guide-card-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(0.85rem, 2.5vw, 0.92rem); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0E1D42; margin-bottom: 6px; line-height: 1.35; }
+.guide-card-text { font-size: clamp(0.82rem, 2.3vw, 0.88rem); color: var(--text-secondary); line-height: 1.6; }
+.guide-statement { background: linear-gradient(135deg,rgba(46,205,166,.1),rgba(33,150,243,.1)); border: 1.5px solid var(--teal); border-radius: 12px; padding: clamp(16px, 3vw, 20px) clamp(16px, 3vw, 24px); margin-bottom: 26px; display: flex; align-items: center; gap: 14px; box-sizing: border-box; }
+.guide-statement-icon { font-size: 1.6rem; color: var(--teal); flex-shrink: 0; }
+.guide-statement-text { font-size: clamp(0.88rem, 2.5vw, 0.98rem); font-style: italic; font-weight: 600; color: #0E1D42; line-height: 1.55; }
+.guide-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 1024px) {
+  .characters-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+
+@media (max-width: 768px) {
+  .game-topbar { padding: 8px 14px; }
+  .gtb-logo img { height: 28px; }
+  .gtb-badge { font-size: 0.65rem; padding: 4px 10px; }
+  .hud-attempt-badge { font-size: 0.65rem; padding: 3px 8px; }
+  .hud-t-val { font-size: 1.2rem; }
+  .hud-m-track { width: 65px; }
+}
+
+@media (max-width: 640px) {
+  .sel-header { padding: 26px 16px 6px; }
+  .sel-logo img { height: 48px; }
+  .characters-section { padding: 18px 12px 16px; }
+  .characters-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .char-card { padding: 16px 8px 14px; border-radius: 12px; }
+  .char-img-wrap { height: 125px; margin-bottom: 8px; }
+  .char-img-wrap img { max-height: 115px; }
+  .char-name { font-size: 0.66rem; letter-spacing: 1px; }
+  .char-underline { width: 16px; height: 2px; margin-top: 6px; }
+  .char-select-arrow { width: 18px; height: 22px; top: 6px; right: 6px; }
+  .selection-panel { padding: 0 12px 28px; }
+  .sel-inner { flex-direction: column; padding: 22px 18px; text-align: center; gap: 12px; }
+  .sel-char-img img { height: 95px; }
+  .btn-start { width: 100%; justify-content: center; min-height: 48px; }
+  .welcome-logo img { height: 80px; }
+  .btn-enter { padding: 14px 36px; font-size: 0.9rem; min-height: 48px; }
+  .corner-decor { display: none; }
+
+  /* Instructions Screen */
+  .instr-header { flex-direction: column; text-align: center; padding: 20px 16px; gap: 12px; }
+  .instr-body { padding: 20px 16px; }
+  .instr-grid { grid-template-columns: 1fr; gap: 10px; }
+  .instr-levels { flex-direction: column; gap: 8px; }
+  .instr-actions { flex-direction: column-reverse; width: 100%; gap: 10px; }
+  .instr-actions .gbtn { width: 100%; }
+
+  /* Level Complete Screen */
+  .lc-head { padding: 20px 16px; }
+  .lc-body { padding: 20px 16px; }
+  .lc-actions { flex-direction: column-reverse; width: 100%; gap: 10px; }
+  .lc-actions .gbtn { width: 100%; }
+
+  /* Game Over Screen */
+  .go-head { padding: 22px 16px; }
+  .go-body { padding: 20px 16px; }
+  .go-actions .gbtn { width: 100%; }
+
+  /* Final Results Screen */
+  .fs-head { padding: 24px 16px; }
+  .fs-body { padding: 20px 16px; }
+  .fs-dual-scores { grid-template-columns: 1fr; gap: 12px; }
+  .fs-breakdown { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .fs-actions { flex-direction: column; width: 100%; gap: 10px; }
+  .fs-actions .gbtn { width: 100%; }
+
+  /* Guidance Screen */
+  .guide-head { padding: 24px 16px; }
+  .guide-body { padding: 20px 16px; }
+  .guide-grid { grid-template-columns: 1fr; gap: 12px; }
+  .guide-actions { flex-direction: column; width: 100%; gap: 10px; }
+  .guide-actions .gbtn { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .game-canvas-wrap { padding: 6px; }
+  .game-topbar { padding: 8px 10px; gap: 6px; }
+  .gtb-logo img { height: 26px; }
+  .gtb-badge { font-size: 0.62rem; padding: 3px 8px; letter-spacing: 1px; }
+  .hud-attempt-badge { font-size: 0.62rem; padding: 3px 7px; }
+  .hud-t-lbl { font-size: 0.58rem; letter-spacing: 1px; }
+  .hud-t-val { font-size: 1.15rem; min-width: 28px; }
+  .hud-m-lbl { font-size: 0.58rem; letter-spacing: 1px; }
+  .hud-m-track { width: 50px; height: 6px; }
+  .hud-m-pct { font-size: 0.65rem; min-width: 26px; }
+}
+
+@media (max-width: 380px) {
+  .characters-grid { gap: 8px; }
+  .char-card { padding: 12px 6px 12px; }
+  .char-img-wrap { height: 100px; }
+  .char-img-wrap img { max-height: 95px; }
+  .char-name { font-size: 0.6rem; }
+  .lc-stats { grid-template-columns: 1fr; }
+}
+
+/* ===================================================
+   GAME SCREENS — THE DISTRACTED (FOCUS RUN)
+   =================================================== */
+
+/* Distracted instructions */
+#distracted-instructions-screen {
+  justify-content: center;
+  align-items: center;
+  padding: clamp(16px, 4vw, 36px) clamp(12px, 3vw, 20px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Distracted game screen */
+#distracted-game-screen {
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+  justify-content: flex-start;
+  overflow: hidden;
+  width: 100%;
+}
+
+.distracted-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#distracted-canvas {
+  display: block;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: calc(100vh - 75px);
+  box-sizing: border-box;
+}
+
+/* HUD Progress indicator */
+.hud-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-p-lbl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.hud-p-track {
+  width: 70px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--border-light);
+  overflow: hidden;
+}
+.hud-p-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  background: var(--teal);
+  transition: width 0.15s ease;
+}
+
+/* Flash overlay & Toast for Distracted */
+#distracted-flash {
+  position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; transition: opacity 0.15s ease;
+}
+#distracted-flash.show { opacity: 1; }
+#distracted-toast {
+  position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42; color: #fff; padding: 9px 20px; border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 1.5px; white-space: nowrap; z-index: 60; opacity: 0; pointer-events: none;
+  transition: all 0.3s ease; box-shadow: var(--shadow-md);
+}
+#distracted-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#distracted-toast.warn { background: var(--orange); }
+#distracted-toast.danger { background: var(--red); }
+
+/* Responsive adjustments for Distracted HUD */
+@media (max-width: 768px) {
+  .hud-progress-wrap { display: none; }
+}
+@media (max-width: 480px) {
+  .distracted-canvas-wrap { padding: 4px; }
+}
+
+
+/* ===================================================
+   SHARED DESIGN SYSTEM EXTENSIONS & GAME STYLES
+   =================================================== */
+
+/* Shared Button Variants */
+.gbtn-orange { background: var(--orange); color: #fff; border-color: var(--orange); }
+.gbtn-orange:hover { background: #D46622; border-color: #D46622; box-shadow: var(--shadow-orange); }
+.gbtn-green { background: var(--green); color: #fff; border-color: var(--green); }
+.gbtn-green:hover { background: #00A844; border-color: #00A844; box-shadow: var(--shadow-green); }
+
+/* Overthinker Mobile D-Pad Controls */
+.maze-dpad {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 6px auto 10px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 20;
+}
+@media (max-width: 768px) {
+  .maze-dpad { display: flex; }
+}
+.dpad-mid-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dpad-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #0E1D42;
+  color: #2ECDA6;
+  border: 2px solid var(--border-med);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.dpad-btn:active {
+  transform: scale(0.92);
+  background: var(--navy-light);
+  border-color: var(--teal);
+}
+.dpad-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(14,29,66,0.08);
+}
+
+
+/* Result Screen Tips Cards (HOW TO REDUCE OVERTHINKING & OTHERS) */
+.fs-tips-section {
+  width: 100%;
+  margin: 18px 0 20px;
+  text-align: left;
+}
+.fs-tips-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #0E1D42;
+  margin-bottom: 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.fs-tips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .fs-tips-grid { grid-template-columns: 1fr; gap: 10px; }
+}
+.fs-tip-card {
+  background: #F8FAFC;
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.fs-tip-card:hover {
+  border-color: var(--teal);
+  transform: translateY(-2px);
+}
+.fs-tip-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: #0E1D42;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.fs-tip-text {
+  font-size: clamp(0.82rem, 1.8vw, 0.9rem);
+  color: #152B4A;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* ===================================================
+   PROCRASTINATOR: DEADLINE ROOM STYLES
+   =================================================== */
+#procrastinator-instructions-screen,
+#procrastinator-game-screen,
+#procrastinator-level-complete-screen,
+#procrastinator-game-over-screen,
+#procrastinator-final-score-screen,
+#procrastinator-guidance-screen {
+  width: 100%;
+}
+
+.procrastinator-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  width: 100%;
+  max-width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#procrastinator-canvas {
+  display: block;
+  background: #152B4A;
+  border: 2px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.procrastinator-controls-dock {
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 16px 14px;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+.pg-drop-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border: 2px solid #D46622;
+  box-shadow: var(--shadow-md), var(--shadow-orange);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.pg-drop-btn:active {
+  transform: scale(0.97);
+  background: #D46622;
+}
+
+#procrastinator-toast {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+#procrastinator-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#procrastinator-toast.warn { background: var(--orange); }
+#procrastinator-toast.danger { background: var(--red); }
+#procrastinator-toast.teal { background: var(--teal); color: #0E1D42; }
+
+/* ===================================================
+   FOCUSED ONE: FOCUS GRID STYLES
+   =================================================== */
+#focused-instructions-screen,
+#focused-game-screen,
+#focused-level-complete-screen,
+#focused-game-over-screen,
+#focused-final-score-screen,
+#focused-guidance-screen {
+  width: 100%;
+}
+
+.focus-main-layout {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 12px 16px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+@media (max-width: 820px) {
+  .focus-main-layout {
+    flex-direction: column;
+    gap: 14px;
+    padding: 8px 12px;
+  }
+}
+
+.focus-char-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+  width: 180px;
+  flex-shrink: 0;
+}
+@media (max-width: 820px) {
+  .focus-char-sidebar {
+    display: none; /* Hidden on mobile to prioritize full interactive grid */
+  }
+}
+.focus-char-sidebar img {
+  height: 145px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(21,43,74,0.12));
+}
+.focus-char-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(0,200,83,0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.focus-center-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.focus-status-banner {
+  width: 100%;
+  background: #0E1D42;
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-align: center;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.focus-status-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  transition: color 0.25s ease;
+}
+.focus-status-text.watching { color: var(--yellow); }
+.focus-status-text.ready { color: var(--teal); }
+.focus-status-text.success { color: var(--green); }
+
+.focus-grid-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 440px;
+  max-height: 440px;
+  padding: 10px;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 440px) {
+  .focus-grid-wrap {
+    max-width: 330px;
+    max-height: 330px;
+    padding: 6px;
+  }
+}
+
+.focus-grid {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+@media (max-width: 440px) {
+  .focus-grid { gap: 7px; }
+}
+.focus-grid.input-disabled {
+  pointer-events: none;
+}
+.focus-grid.round-success-glow .focus-cell {
+  border-color: var(--green);
+  box-shadow: 0 0 16px rgba(0,200,83,0.35);
+}
+
+.focus-cell {
+  position: relative;
+  background: #0E1D42;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--shadow-sm);
+  outline: none;
+}
+.focus-cell:hover {
+  border-color: var(--teal);
+  transform: scale(1.02);
+}
+.focus-cell:active {
+  transform: scale(0.95);
+}
+.f-cell-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.f-cell-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.2s ease;
+}
+.f-cell-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.72rem, 1.8vw, 0.9rem);
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Active Highlight / Sequences */
+.focus-cell.lit {
+  background: var(--teal) !important;
+  border-color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 0 24px rgba(46, 205, 166, 0.7);
+}
+.focus-cell.lit .f-cell-dot {
+  background: #0E1D42;
+  transform: scale(1.4);
+}
+.focus-cell.lit .f-cell-num {
+  color: #0E1D42;
+  font-weight: 800;
+}
+
+.focus-cell.correct {
+  background: var(--green) !important;
+  border-color: #fff !important;
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(0, 200, 83, 0.6);
+}
+.focus-cell.correct .f-cell-dot { background: #fff; }
+.focus-cell.correct .f-cell-num { color: #fff; }
+
+.focus-cell.wrong {
+  background: var(--red) !important;
+  border-color: #fff !important;
+  animation: fShake 0.3s ease;
+  box-shadow: 0 0 20px rgba(229, 57, 53, 0.6);
+}
+@keyframes fShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.focus-cell.distraction-pulse {
+  border-color: var(--orange);
+  box-shadow: 0 0 14px rgba(232, 120, 48, 0.4);
+}
+
+/* Sequence step dots */
+.focus-step-dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.f-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-light);
+  border: 1.5px solid var(--border-med);
+  transition: all 0.25s ease;
+}
+.f-step-dot.filled {
+  background: var(--teal);
+  border-color: var(--teal-dark);
+  box-shadow: 0 0 8px rgba(46, 205, 166, 0.5);
+}
+.f-step-dot.active {
+  border-color: var(--teal);
+  transform: scale(1.3);
+}
+
+#focused-toast {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: #0E1D42;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+#focused-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#focused-toast.warn { background: var(--orange); }
+#focused-toast.danger { background: var(--red); }
+#focused-toast.teal { background: var(--teal); color: #0E1D42; }
+
+/* Status meter extra classes */
+.hud-m-fill.good { background: var(--green); }
+.hud-attempt-badge.warn-stab { color: var(--orange); background: rgba(232,120,48,0.12); border-color: var(--orange); }
+.hud-attempt-badge.crit-stab { color: var(--red); background: rgba(229,57,53,0.12); border-color: var(--red); }
+.hud-attempt-badge.crit-shields { color: var(--red); background: rgba(229,57,53,0.12); border-color: var(--red); animation: tPulse 0.6s infinite alternate; }
+
+
+/* ===================================================
+   DEADLINE DASH INTERACTIVE CONTROLS & ANIMATIONS
+   =================================================== */
+
+.pg-controls-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pg-work-btn {
+  width: 100%;
+  max-width: 520px;
+  min-height: 54px;
+  border-radius: 12px;
+  background: var(--teal);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid var(--teal-dark);
+  box-shadow: var(--shadow-md), var(--shadow-teal);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.pg-work-btn:hover {
+  background: var(--teal-dark);
+  box-shadow: 0 6px 24px rgba(46, 205, 166, 0.45);
+}
+.pg-work-btn:active {
+  transform: scale(0.97);
+  background: #24997c;
+}
+.pg-work-icon {
+  font-size: 1.3rem;
+}
+
+.pg-dismiss-dock {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 580px;
+}
+@media (max-width: 520px) {
+  .pg-dismiss-dock {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
+.pg-dir-btn {
+  padding: 8px 10px;
+  min-height: 42px;
+  border-radius: 8px;
+  background: #0E1D42;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.pg-dir-btn.btn-left { border-color: #2196F3; color: #64B5F6; }
+.pg-dir-btn.btn-up { border-color: #FFCA28; color: #FFE082; }
+.pg-dir-btn.btn-right { border-color: #E87830; color: #FFB74D; }
+.pg-dir-btn.btn-down { border-color: #00C853; color: #81C784; }
+
+.pg-dir-btn:hover {
+  transform: translateY(-2px);
+  background: #172B52;
+}
+.pg-dir-btn:active {
+  transform: scale(0.95);
+}
+
+.hud-attempt-badge.flow-active {
+  background: rgba(46, 205, 166, 0.15);
+  border-color: var(--teal);
+  color: var(--teal);
+  animation: glowPulse 1.2s infinite alternate;
+}
+@keyframes glowPulse {
+  from { box-shadow: 0 0 4px rgba(46, 205, 166, 0.3); }
+  to { box-shadow: 0 0 12px rgba(46, 205, 166, 0.6); }
+}
+
+
+/* ===================================================
+   PROCRASTINATOR ONE-BUTTON AVOID STYLES
+   Reference: PacoGames Avoid
+   =================================================== */
+
+.pg-dodge-btn {
+  width: 100%;
+  max-width: 580px;
+  min-height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2ECDA6 0%, #1FB490 100%);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid #24997C;
+  box-shadow: 0 4px 18px rgba(46, 205, 166, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.pg-dodge-btn:hover {
+  background: linear-gradient(135deg, #37DCB3 0%, #2ECDA6 100%);
+  box-shadow: 0 6px 24px rgba(46, 205, 166, 0.55);
+  transform: translateY(-2px);
+}
+.pg-dodge-btn:active {
+  transform: scale(0.97);
+  background: #24997C;
+  box-shadow: 0 2px 8px rgba(46, 205, 166, 0.3);
+}
+.pg-dodge-icon {
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+.hud-score-display, .hud-avoided-display {
+  display: flex;
+  align-items: center;
+  background: rgba(21, 43, 74, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+@media (max-width: 600px) {
+  .pg-dodge-btn {
+    min-height: 50px;
+    font-size: 0.88rem;
+    letter-spacing: 1.2px;
+  }
+}
+
+/* ===== UNIFIED RESULTS & IMPROVEMENT DESIGN SYSTEM ===== */
+#game-screen, #distracted-game-screen, #procrastinator-game-screen, #focused-game-screen,
+#final-score-screen, #distracted-final-score-screen, #procrastinator-final-score-screen, #focused-final-score-screen,
+#guidance-screen, #distracted-guidance-screen, #procrastinator-guidance-screen, #focused-guidance-screen,
+#level-complete-screen, #distracted-level-complete-screen, #procrastinator-level-complete-screen, #focused-level-complete-screen,
+#game-over-screen, #distracted-game-over-screen, #procrastinator-game-over-screen, #focused-game-over-screen {
+  background: #ffffff !important;
+}
+
+.fs-levels-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(46, 205, 166, 0.12);
+  border: 1.5px solid var(--teal);
+  color: #0E1D42;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+.fs-levels-badge.partial {
+  background: rgba(255, 202, 40, 0.15);
+  border-color: var(--yellow);
+  color: #0E1D42;
+}
+.fs-levels-badge.needs-work {
+  background: rgba(229, 57, 53, 0.12);
+  border-color: var(--red);
+  color: #c62828;
+}
+.fs-levels-icon {
+  font-weight: 700;
+}
+
+.hud-attempt-badge.second-attempt {
+  color: #E87830 !important;
+  background: rgba(232,120,48,.12) !important;
+  border-color: #E87830 !important;
+}
+
+#procrastinator-canvas, #distracted-canvas, #game-canvas {
+  background: #ffffff;
+  border: 2px solid #0E1D42;
+  border-radius: 8px;
+  display: block;
+}
+
+
+/* ===== RE:SET IMPROVEMENTS (Logo, Instructions, Responsiveness) ===== */
+#distracted-game-screen .gtb-logo img, .gtb-logo img {
+  height: clamp(38px, 6vw, 48px) !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+.instr-logo img { height: clamp(52px, 10vw, 72px) !important; width: auto !important; object-fit: contain !important; }
+.lc-logo img, .go-logo img { height: clamp(48px, 9vw, 68px) !important; width: auto !important; object-fit: contain !important; }
+.fs-logo img, .guide-logo img { height: clamp(50px, 9vw, 70px) !important; width: auto !important; object-fit: contain !important; }
+
+/* Sound toggle button */
+.sound-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.sound-toggle-btn:hover { transform: scale(1.08); background: #f8fafc; }
+.sound-toggle-btn:active { transform: scale(0.95); }
+
+/* Compact Single-Screen Instructions */
+#distracted-instructions-screen {
+  padding: clamp(10px, 2.5vw, 20px) clamp(10px, 2.5vw, 18px) !important;
+  min-height: 100vh !important; min-height: 100dvh !important;
+  align-items: center !important; justify-content: center !important;
+}
+#distracted-instructions-screen .instr-wrap {
+  max-width: 680px !important; width: 100% !important;
+}
+.instr-tri-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;
+}
+.instr-tri-card {
+  background: #f8fafc; border: 1.5px solid var(--border-light); border-radius: 10px; padding: 10px 12px;
+}
+.instr-tri-lbl {
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px;
+}
+.instr-tri-val {
+  font-size: 0.82rem; font-weight: 600; color: #0E1D42; line-height: 1.4;
+}
+.instr-levels-ribbon {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; background: #f1f5f9; border-radius: 8px; margin-bottom: 16px;
+  font-size: 0.78rem; font-weight: 600;
+}
+@media (max-width: 640px) {
+  #distracted-instructions-screen { padding: 8px 10px !important; }
+  .instr-header { padding: 10px 12px !important; gap: 10px !important; }
+  .instr-char img { height: 50px !important; }
+  .instr-title { font-size: 1.2rem !important; margin: 0 !important; }
+  .instr-hook { font-size: 0.72rem !important; margin-top: 2px !important; }
+  .instr-body { padding: 10px 12px !important; }
+  .instr-tri-grid { grid-template-columns: 1fr; gap: 4px; margin-bottom: 8px; }
+  .instr-tri-card { padding: 5px 8px; }
+  .instr-tri-lbl { font-size: 0.6rem; margin-bottom: 1px; }
+  .instr-tri-val { font-size: 0.75rem; line-height: 1.25; }
+  .instr-levels-ribbon { padding: 4px 8px; margin-bottom: 8px; font-size: 0.7rem; }
+  .instr-actions .gbtn { min-height: 42px; padding: 6px 12px; font-size: 0.8rem; }
+  .guide-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ===================================================
+   MOBILE & TOPBAR RESPONSIVE FIXES
+   =================================================== */
+
+/* Topbar cleanup: clean logo button, no awkward giant box */
+#distracted-game-screen .gtb-logo {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 4px !important;
+  min-height: 40px !important;
+  min-width: 40px !important;
+}
+#distracted-game-screen .gtb-logo img {
+  height: clamp(38px, 6vw, 48px) !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+
+/* Portrait topbar wrap fix: prevent overlap/collision */
+@media (max-width: 768px) and (orientation: portrait) {
+  #distracted-game-screen .game-topbar {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 4px 8px !important;
+    padding: 6px 10px !important;
+  }
+  #distracted-game-screen .gtb-logo { grid-column: 1; grid-row: 1; }
+  #distracted-game-screen .gtb-center { grid-column: 2; grid-row: 1; justify-content: flex-start; }
+  #distracted-game-screen .gtb-right { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; width: 100%; }
+}
+
+/* Landscape Canvas Expansion: full available screen, bigger gameplay */
+@media (orientation: landscape) {
+  #distracted-game-screen {
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  #distracted-game-screen .game-topbar {
+    padding: 3px 12px !important;
+    min-height: 40px !important;
+    border-bottom: 1.5px solid var(--border-light) !important;
+  }
+  .distracted-canvas-wrap {
+    padding: 2px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: calc(100dvh - 42px) !important;
+    max-height: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  #distracted-canvas {
+    max-height: calc(100dvh - 44px) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(14,29,66,0.1) !important;
+  }
+}
+
+/* LEVEL COMPLETE & RESULTS: Perfect Single-Screen Fit in Landscape */
+@media (max-height: 540px) and (orientation: landscape) {
+  #distracted-level-complete-screen {
+    padding: 6px 12px !important;
+    justify-content: center !important;
+  }
+  #distracted-level-complete-screen .lc-wrap {
+    max-width: 580px !important;
+    width: 100% !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-md) !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+  }
+  #distracted-level-complete-screen .lc-head {
+    padding: 6px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+  #distracted-level-complete-screen .lc-logo img {
+    height: 24px !important;
+    margin-bottom: 0 !important;
+  }
+  #distracted-level-complete-screen .lc-title-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  #distracted-level-complete-screen .lc-check {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 0.75rem !important;
+  }
+  #distracted-level-complete-screen .lc-title {
+    font-size: 1.05rem !important;
+    margin: 0 !important;
+  }
+  #distracted-level-complete-screen .lc-body {
+    padding: 8px 14px !important;
+  }
+  #distracted-level-complete-screen .lc-attempt-tag {
+    display: inline-block !important;
+    padding: 2px 8px !important;
+    font-size: 0.68rem !important;
+    margin-bottom: 6px !important;
+  }
+  #distracted-level-complete-screen .lc-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  #distracted-level-complete-screen .lc-stat {
+    padding: 4px 6px !important;
+    border-radius: 6px !important;
+    background: #f8f9fb !important;
+  }
+  #distracted-level-complete-screen .lc-stat-lbl {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 2px !important;
+  }
+  #distracted-level-complete-screen .lc-stat-val {
+    font-size: 0.95rem !important;
+    line-height: 1.1 !important;
+  }
+  #distracted-level-complete-screen .lc-actions {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+  }
+  #distracted-level-complete-screen .lc-actions .gbtn {
+    flex: 1 !important;
+    min-height: 38px !important;
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  /* Game Over & Final score landscape fit */
+  #distracted-game-over-screen, #distracted-final-score-screen, #distracted-guidance-screen {
+    padding: 6px 12px !important;
+    justify-content: center !important;
+  }
+  .go-wrap, .fs-wrap, .guide-wrap {
+    max-width: 580px !important;
+    border-radius: 12px !important;
+  }
+  .go-head, .fs-head, .guide-head {
+    padding: 6px 14px !important;
+  }
+  .go-body, .fs-body, .guide-body {
+    padding: 8px 14px !important;
+  }
+  .fs-char-img img { height: 60px !important; }
+  .fs-breakdown {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 6px !important;
+  }
+  .fs-stat { padding: 4px 6px !important; }
+  .fs-stat-val { font-size: 0.95rem !important; }
+  .fs-stat-lbl { font-size: 0.58rem !important; }
+  .fs-message-card { padding: 6px 10px !important; margin-bottom: 6px !important; }
+  .fs-message { font-size: 0.75rem !important; line-height: 1.35 !important; margin-bottom: 2px !important; }
+  .fs-quote { font-size: 0.72rem !important; line-height: 1.3 !important; }
+  .fs-disclaimer { display: none !important; }
+  .fs-actions, .guide-actions { display: flex !important; gap: 8px !important; }
+  .fs-actions .gbtn, .guide-actions .gbtn {
+    flex: 1 !important; min-height: 38px !important; padding: 6px 10px !important; font-size: 0.78rem !important;
+  }
+}
+
+/* ===== DISTRACTED GUIDANCE & RESULTS MOBILE SCROLLING POLISH ===== */
+#distracted-final-score-screen,
+#distracted-guidance-screen {
+  justify-content: flex-start !important;
+  align-items: center !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior-y: auto !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  padding: clamp(20px, 4vw, 36px) clamp(14px, 3vw, 20px) clamp(60px, 10vh, 100px) !important;
+  box-sizing: border-box;
+}
+
+#distracted-final-score-screen .fs-wrap,
+#distracted-guidance-screen .guide-wrap {
+  width: 100%;
+  max-width: 820px;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin: 0 auto clamp(36px, 5vh, 60px) auto !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+</style>
+<style id="dg-polish">
+/* =========================================================
+   THE DISTRACTED — MOBILE / LANDSCAPE / TOUCH POLISH
+   (loaded last so it refines the rules above; scoped to this game)
+   ========================================================= */
+
+/* --- While playing: lock the page so swipes/taps can't scroll, zoom or select --- */
+html.dg-playing, html.dg-playing body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+html.dg-playing body { position: fixed; inset: 0; width: 100%; height: 100%; }
+
+/* --- Game screen fills the real visible viewport --- */
+#distracted-game-screen {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* --- HUD bar --- */
+#distracted-game-screen .game-topbar {
+  position: relative;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 8px max(14px, env(safe-area-inset-right)) 8px max(14px, env(safe-area-inset-left));
+  background: #fff;
+  border-bottom: 2px solid var(--border-light);
+}
+#distracted-game-screen .gtb-center {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+#distracted-game-screen .gtb-badge,
+#distracted-game-screen .hud-attempt-badge { white-space: nowrap; }
+#distracted-game-screen .gtb-badge { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+#distracted-game-screen .gtb-right { flex: 0 0 auto; gap: 12px; }
+
+/* Logo = tappable button that opens the quit confirmation (same image, just larger) */
+#distracted-game-screen .gtb-logo {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s ease, border-color .15s ease, transform .1s ease;
+}
+#distracted-game-screen .gtb-logo img { height: 38px; width: auto; display: block; }
+#distracted-game-screen .gtb-logo:hover { background: rgba(21,43,74,.05); border-color: var(--border-med); }
+#distracted-game-screen .gtb-logo:active { transform: scale(.96); }
+#distracted-game-screen .gtb-logo:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+/* Clearer HUD readouts */
+#distracted-game-screen .hud-t-lbl,
+#distracted-game-screen .hud-m-lbl,
+#distracted-game-screen .hud-p-lbl { color: rgba(21,43,74,.7); }
+#distracted-game-screen .hud-timer {
+  background: #0E1D42;
+  border-radius: 9px;
+  padding: 3px 12px;
+}
+#distracted-game-screen .hud-timer .hud-t-lbl { color: var(--teal); }
+#distracted-game-screen .hud-t-val { color: #fff; min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+#distracted-game-screen .hud-t-val.danger { color: #ff8a80; }
+#distracted-game-screen .hud-count {
+  background: #f1f5f9;
+  border-radius: 9px;
+  padding: 3px 9px;
+}
+#distracted-game-screen .hud-m-pct { font-variant-numeric: tabular-nums; }
+
+/* --- Play area --- */
+#distracted-game-screen .distracted-canvas-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  background: linear-gradient(180deg, #E1F0FA 0%, #F4F9FD 70%, #FFFFFF 100%);
+  touch-action: none;
+}
+#distracted-canvas {
+  max-height: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  outline: none;
+}
+
+/* Toast sits just under the HUD, whatever its height */
+#distracted-toast { top: calc(var(--dg-top, 60px) + 8px); }
+
+/* --- Progress bar: thin full-width strip along the HUD on small screens --- */
+@media (max-width: 900px), (max-height: 520px) {
+  #distracted-game-screen .hud-progress-wrap {
+    display: flex;
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    gap: 0;
+  }
+  #distracted-game-screen .hud-p-lbl { display: none; }
+  #distracted-game-screen .hud-p-track { width: 100%; height: 5px; border-radius: 0; background: rgba(21,43,74,.1); }
+  #distracted-game-screen .hud-p-fill { border-radius: 0; }
+  #distracted-game-screen .game-topbar { padding-bottom: 11px; }
+}
+
+/* --- Landscape phones (short screens): compact one-row HUD, maximum play area --- */
+@media (max-height: 520px) {
+  #distracted-game-screen .game-topbar { gap: 8px; padding-top: 4px; padding-bottom: 9px; }
+  #distracted-game-screen .gtb-logo { padding: 2px 8px; border-radius: 8px; }
+  #distracted-game-screen .gtb-logo img { height: 30px; }
+  #distracted-game-screen .gtb-badge { font-size: .6rem; letter-spacing: .8px; padding: 3px 8px; }
+  #distracted-game-screen .hud-attempt-badge { font-size: .58rem; letter-spacing: .8px; padding: 2px 7px; }
+  #distracted-game-screen .gtb-right { gap: 8px; }
+  #distracted-game-screen .hud-timer { padding: 1px 9px; gap: 5px; }
+  #distracted-game-screen .hud-t-lbl { font-size: .52rem; letter-spacing: 1px; }
+  #distracted-game-screen .hud-t-val { font-size: 1.1rem; }
+  #distracted-game-screen .hud-m-lbl { font-size: .52rem; letter-spacing: 1px; }
+  #distracted-game-screen .hud-m-track { width: 46px; height: 6px; }
+  #distracted-game-screen .hud-m-pct { font-size: .68rem; min-width: 0; }
+  #distracted-game-screen .hud-count { padding: 1px 7px; }
+  #distracted-game-screen .distracted-canvas-wrap { padding: 3px max(6px, env(safe-area-inset-right)) max(3px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left)); }
+  #distracted-canvas { border-width: 1px; border-radius: 6px; }
+  #distracted-toast { font-size: .68rem; padding: 5px 14px; letter-spacing: 1px; }
+}
+/* very narrow landscape (older/small phones): drop the meter bar, keep the % */
+@media (max-height: 520px) and (max-width: 700px) {
+  #distracted-game-screen .hud-dist-meter .hud-m-track { display: none; }
+  #distracted-game-screen .hud-dist-meter .hud-m-lbl { font-size: 0; }
+  #distracted-game-screen .hud-dist-meter .hud-m-lbl::before { content: "DIST"; font-size: .52rem; letter-spacing: 1px; }
+  #distracted-game-screen .gtb-badge { font-size: .55rem; letter-spacing: .4px; padding: 3px 6px; }
+}
+
+/* --- Quit confirmation modal --- */
+.dg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left));
+  background: rgba(14,29,66,.62);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  touch-action: none;
+}
+.dg-modal[hidden] { display: none; }
+.dg-modal-card {
+  width: 100%;
+  max-width: 440px;
+  max-height: 100%;
+  overflow: auto;
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: fadeUp .25s ease both;
+}
+.dg-modal-head { background: #0E1D42; padding: 18px 20px 16px; }
+.dg-modal-tag { font-family: 'Space Grotesk', sans-serif; font-size: .64rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+.dg-modal-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.1rem, 4vw, 1.4rem); font-weight: 700; letter-spacing: 1px; line-height: 1.25; color: #fff; }
+.dg-modal-body { padding: 18px 20px 20px; }
+.dg-modal-text { font-size: .9rem; line-height: 1.55; color: rgba(21,43,74,.78); margin-bottom: 16px; }
+.dg-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+.dg-modal-actions .gbtn { width: 100%; min-height: 50px; }
+@media (max-height: 520px) {
+  .dg-modal-card { max-width: 560px; }
+  .dg-modal-head { padding: 10px 16px 9px; }
+  .dg-modal-tag { margin-bottom: 3px; }
+  .dg-modal-body { padding: 12px 16px 14px; }
+  .dg-modal-text { margin-bottom: 10px; font-size: .84rem; }
+  .dg-modal-actions { flex-direction: row; }
+  .dg-modal-actions .gbtn { flex: 1; min-height: 46px; padding: 8px 10px; font-size: .78rem; letter-spacing: 1px; }
+}
+
+
+
+/* --- Landscape phones: tighter layouts for the non-gameplay screens so less scrolling is needed --- */
+@media (max-height: 520px) and (orientation: landscape) {
+  #distracted-instructions-screen { padding: 10px 16px; min-height: 0; }
+  #distracted-instructions-screen .instr-wrap { max-width: 860px; }
+  .instr-header { padding: 12px 20px; gap: 16px; }
+  .instr-char img { height: 62px; }
+  .instr-logo img { height: 26px; margin-bottom: 4px; }
+  .instr-title { font-size: 1.35rem; margin-bottom: 2px; }
+  .instr-hook { font-size: .8rem; }
+  .instr-body { padding: 12px 20px 14px; }
+  .instr-desc { margin-bottom: 10px; font-size: .8rem; line-height: 1.5; }
+  .instr-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .instr-card { padding: 8px 10px; }
+  .instr-card-value { font-size: .74rem; }
+  .instr-levels { margin-bottom: 12px; gap: 8px; }
+  .instr-lvl { padding: 8px 6px; }
+  .lc-head, .go-head, .fs-head, .guide-head { padding-top: 12px; padding-bottom: 12px; }
+  .lc-body, .go-body, .fs-body, .guide-body { padding-top: 12px; padding-bottom: 14px; }
+}
+</style>
+</head>
+<body>
+  <div id="pixel-decor"></div>
+  <div id="transition-overlay"></div>
+<!-- ======== DISTRACTED GAME INSTRUCTIONS ======== -->
+<div class="screen active fade-in" id="distracted-instructions-screen">
+  <div class="instr-wrap">
+    <div class="instr-header" style="background:#0E1D42;">
+      <div class="instr-char"><img src="distracted.png" alt="The Distracted"></div>
+      <div class="instr-title-block">
+        <div class="instr-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+        <div class="instr-tag" style="color:var(--teal);">DISTRACTED CHALLENGE</div>
+        <h1 class="instr-title">FOCUS RUN</h1>
+        <p class="instr-hook">"Reclaim your attention in a university campus full of digital noise."</p>
+      </div>
+    </div>
+    <div class="instr-body">
+      <div class="instr-tri-grid">
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🎯 Objective</div>
+          <div class="instr-tri-val">Sprint across campus corridors and leap over distraction pop-ups to the Study Zone.</div>
+        </div>
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🎮 Controls</div>
+          <div class="instr-tri-val">Tap anywhere on mobile screen to jump or press Spacebar / Up Arrow on keyboard.</div>
+        </div>
+        <div class="instr-tri-card">
+          <div class="instr-tri-lbl">🏆 Win Condition</div>
+          <div class="instr-tri-val">Finish the course across all 3 levels (60s, 45s, 30s) within 2 attempts per level.</div>
+        </div>
+      </div>
+      <div class="instr-levels-ribbon">
+        <span style="color:var(--teal);">Level 1: 60s (Basic Jumps)</span>
+        <span>·</span>
+        <span style="color:var(--orange);">Level 2: 45s (Moving Alerts)</span>
+        <span>·</span>
+        <span style="color:var(--red);">Level 3: 30s (Dense Obstacles)</span>
+      </div>
+      <div class="instr-actions">
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← Back to Personas</button>
+        <button class="gbtn gbtn-teal" onclick="startDistractedGame()">START FOCUS RUN →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== DISTRACTED GAME SCREEN ======== -->
+<div class="screen" id="distracted-game-screen">
+  <div class="game-topbar">
+    <button type="button" class="gtb-logo" id="distracted-logo-btn" aria-label="RE:SET logo — tap to quit the game" title="Tap to quit"><img src="logo-blue-outline.png" alt="RE:SET"></button>
+    <button type="button" class="sound-toggle-btn" onclick="sfx.toggleMute()" aria-label="Toggle sound" title="Sound On (tap to mute)">🔊</button>
+    <div class="gtb-center">
+      <div class="gtb-badge" id="distracted-hud-level" style="background:#0E1D42;">LEVEL 1 — DIGITAL DISTRACTIONS</div>
+      <div class="hud-attempt-badge" id="distracted-hud-attempt">ATTEMPT 1/2</div>
+    </div>
+    <div class="gtb-right">
+      <div class="hud-timer">
+        <span class="hud-t-lbl">TIME</span>
+        <span class="hud-t-val" id="distracted-hud-timer">60</span>
+      </div>
+      <div class="hud-meter hud-dist-meter">
+        <span class="hud-m-lbl">DISTRACTION</span>
+        <div class="hud-m-track"><div class="hud-m-fill" id="distracted-m-fill"></div></div>
+        <span class="hud-m-pct" id="distracted-m-pct">0%</span>
+      </div>
+      <div class="hud-meter hud-count" style="gap:4px;">
+        <span class="hud-m-lbl">📚</span>
+        <span class="hud-m-pct" id="distracted-hud-books" style="color:var(--teal);min-width:18px;">0</span>
+      </div>
+      <div class="hud-meter hud-count" style="gap:4px;">
+        <span class="hud-m-lbl">🪙</span>
+        <span class="hud-m-pct" id="distracted-hud-tokens" style="color:var(--orange);min-width:18px;">0</span>
+      </div>
+      <div class="hud-progress-wrap">
+        <span class="hud-p-lbl">FINISH</span>
+        <div class="hud-p-track"><div class="hud-p-fill" id="distracted-p-fill"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="distracted-canvas-wrap">
+    <canvas id="distracted-canvas" width="960" height="520"></canvas>
+  </div>
+  <div id="distracted-toast"></div>
+  <div class="game-flash" id="distracted-flash"></div>
+</div>
+
+<!-- ======== DISTRACTED LEVEL COMPLETE ======== -->
+<div class="screen" id="distracted-level-complete-screen">
+  <div class="lc-wrap">
+    <div class="lc-head" style="background:#0E1D42;">
+      <div class="lc-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="lc-title-row">
+        <div class="lc-check" style="background:var(--teal);color:#0E1D42;">✓</div>
+        <h2 class="lc-title" id="distracted-lc-title">LEVEL COMPLETE</h2>
+      </div>
+    </div>
+    <div class="lc-body">
+      <div class="lc-attempt-tag" id="distracted-lc-attempt-tag" style="background:rgba(46,205,166,.15);border-color:var(--teal);color:#0E1D42;">✓ Cleared on Attempt 1 of 2</div>
+      <div class="lc-stats">
+        <div class="lc-stat"><div class="lc-stat-lbl">Time Remaining</div><div class="lc-stat-val" id="distracted-lc-time">—</div></div>
+        <div class="lc-stat"><div class="lc-stat-lbl">Textbooks Collected</div><div class="lc-stat-val" id="distracted-lc-books" style="color:var(--teal);">—</div></div>
+        <div class="lc-stat"><div class="lc-stat-lbl">Focus Tokens</div><div class="lc-stat-val" id="distracted-lc-tokens" style="color:var(--orange);">—</div></div>
+        <div class="lc-stat"><div class="lc-stat-lbl">Notification Hits</div><div class="lc-stat-val" id="distracted-lc-hits">—</div></div>
+      </div>
+      <div class="lc-actions">
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+        <button class="gbtn gbtn-teal" id="distracted-lc-next-btn">NEXT LEVEL →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== DISTRACTED GAME OVER ======== -->
+<div class="screen" id="distracted-game-over-screen">
+  <div class="go-wrap">
+    <div class="go-head" style="background:#0E1D42;">
+      <div class="go-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="go-icon">📱</div>
+      <div class="go-badge" id="distracted-go-badge">ATTEMPT 1 OF 2 FAILED</div>
+      <h2 class="go-title" id="distracted-go-title">TIME RAN OUT</h2>
+      <p class="go-sub" id="distracted-go-sub">Digital notifications pulled your attention away.</p>
+    </div>
+    <div class="go-body">
+      <div class="go-attempt-card">
+        <p class="go-attempt-msg" id="distracted-go-attempt-msg">You have 1 retry remaining for this session.</p>
+      </div>
+      <div class="go-m-lbl">DISTRACTION METER AT FAILURE</div>
+      <div class="go-m-bar"><div class="go-m-fill" id="distracted-go-m-fill" style="width:100%"></div></div>
+      <div class="go-actions">
+        <button class="gbtn gbtn-navy" id="distracted-go-retry-btn" onclick="retryDistractedLevel()">↔ RETRY LEVEL (ATTEMPT 2/2)</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== DISTRACTED FINAL RESULTS ======== -->
+<div class="screen" id="distracted-final-score-screen">
+  <div class="fs-wrap">
+    <div class="fs-head" style="background:#0E1D42;">
+      <div class="fs-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="fs-super" style="color:var(--teal);">THE DISTRACTED CHALLENGE</div>
+      <h2 class="fs-title" id="distracted-fs-title">FOCUS RESTORED</h2>
+    </div>
+    <div class="fs-body">
+      <div class="fs-char-img"><img src="distracted.png" alt="The Distracted"></div>
+      
+      <!-- Session Level Progress Badge -->
+      <div class="fs-levels-badge" id="distracted-fs-levels-badge">
+        <span class="fs-levels-icon">✓</span>
+        <span id="distracted-fs-levels">3 / 3 LEVELS COMPLETED</span>
+      </div>
+
+      <!-- Dual Scores: Distraction Score vs Focus Score -->
+      <div class="fs-dual-scores">
+        <div class="fs-score-card fs-score-ot">
+          <div class="fs-score-header">
+            <span class="fs-score-tag">DIGITAL NOISE LEVEL</span>
+            <span class="fs-score-badge" id="distracted-fs-ot-badge">0–30 LOW DISTRACTION</span>
+          </div>
+          <div class="fs-score-lbl">DISTRACTION SCORE</div>
+          <div class="fs-score-num" id="distracted-fs-ot-score">18<span class="fs-score-out"> / 100</span></div>
+          <div class="fs-score-bar-wrap">
+            <div class="fs-score-bar-fill" id="distracted-fs-ot-bar" style="width:18%"></div>
+          </div>
+          <div class="fs-score-hint">Lower is better · Measures notification interruptions</div>
+        </div>
+
+        <div class="fs-score-card fs-score-fc">
+          <div class="fs-score-header">
+            <span class="fs-score-tag">ACADEMIC ATTENTION</span>
+            <span class="fs-score-badge" id="distracted-fs-fc-badge">HIGH FOCUS</span>
+          </div>
+          <div class="fs-score-lbl">FOCUS PERFORMANCE</div>
+          <div class="fs-score-num" id="distracted-fs-fc-score">82<span class="fs-score-out"> / 100</span></div>
+          <div class="fs-score-bar-wrap">
+            <div class="fs-score-bar-fill" id="distracted-fs-fc-bar" style="width:82%"></div>
+          </div>
+          <div class="fs-score-hint">Higher is better · Reflects books & focus collected</div>
+        </div>
+      </div>
+
+      <!-- Breakdown Stats (4 stats) -->
+      <div class="fs-breakdown">
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="distracted-fs-time">—</div>
+          <div class="fs-stat-lbl">Time Taken</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="distracted-fs-hits">—</div>
+          <div class="fs-stat-lbl">Notification Hits</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="distracted-fs-books" style="color:var(--teal);">—</div>
+          <div class="fs-stat-lbl">Textbooks</div>
+        </div>
+        <div class="fs-stat">
+          <div class="fs-stat-val" id="distracted-fs-tokens" style="color:var(--orange);">—</div>
+          <div class="fs-stat-lbl">Focus Tokens</div>
+        </div>
+      </div>
+
+      <!-- Narrative Feedback Card -->
+      <div class="fs-message-card">
+        <p class="fs-message" id="distracted-fs-message">You made thoughtful decisions and navigated the campus with control.</p>
+        <p class="fs-quote" id="distracted-fs-quote" style="border-left-color:var(--teal);">"Your attention is your most valuable asset."</p>
+      </div>
+
+      <div class="fs-disclaimer">
+        * Game-based indicators reflect digital distraction gameplay patterns in this session, not a psychological evaluation.
+      </div>
+
+      <!-- 3 Required Working Buttons -->
+      <div class="fs-actions">
+        <button class="gbtn gbtn-navy" onclick="playDistractedAgain()">↺ PLAY AGAIN</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+        <button class="gbtn gbtn-teal" onclick="openDistractedGuidanceScreen()">HOW TO IMPROVE DISTRACTION</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== DISTRACTED GUIDANCE SCREEN ======== -->
+<div class="screen" id="distracted-guidance-screen">
+  <div class="guide-wrap">
+    <div class="guide-head" style="background:#0E1D42;">
+      <div class="guide-logo"><img src="logo-white-outline.png" alt="RE:SET"></div>
+      <div class="guide-tag" style="color:var(--teal);">Attention Habits</div>
+      <h2 class="guide-title">HOW TO IMPROVE DISTRACTION</h2>
+      <p class="guide-sub">Practical focus habits for university students navigating daily digital noise.</p>
+    </div>
+    <div class="guide-body">
+      <!-- Exactly Four Numbered Tips -->
+      <div class="guide-grid" style="grid-template-columns:repeat(3, 1fr);">
+        <div class="guide-card">
+          <div class="guide-num">01</div>
+          <h3 class="guide-card-title">01 — SILENCE NOTIFICATIONS</h3>
+          <p class="guide-card-text">Put devices on Do Not Disturb and out of arm's reach during active study sessions to eliminate trigger pings.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-num">02</div>
+          <h3 class="guide-card-title">02 — ONE TAB AT A TIME</h3>
+          <p class="guide-card-text">Keep only the current assignment tab open to avoid cognitive attention residue from switching contexts.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-num">03</div>
+          <h3 class="guide-card-title">03 — PAUSE BEFORE SWITCHING</h3>
+          <p class="guide-card-text">When an impulse to browse strikes, take a 10-second breath and deliberately redirect your focus back to work.</p>
+        </div>
+      </div>
+
+      <div class="guide-statement">
+        <div class="guide-statement-icon">✦</div>
+        <p class="guide-statement-text">"Your attention is your most valuable asset. Do not let random notifications decide how you spend your day."</p>
+      </div>
+
+      <div class="guide-actions">
+        <button class="gbtn gbtn-teal" onclick="backToResults('distracted')">← BACK TO RESULTS</button>
+        <button class="gbtn gbtn-navy" onclick="playDistractedAgain()">↺ PLAY AGAIN</button>
+        <button class="gbtn gbtn-outline" onclick="goBackToSelection()">← BACK TO CHARACTERS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== QUIT CONFIRMATION MODAL (tap the RE:SET logo during gameplay) ======== -->
+<div class="dg-modal" id="dg-quit-modal" role="dialog" aria-modal="true" aria-labelledby="dg-quit-title" hidden>
+  <div class="dg-modal-card">
+    <div class="dg-modal-head">
+      <div class="dg-modal-tag">Game paused</div>
+      <h2 class="dg-modal-title" id="dg-quit-title">Do you want to quit?</h2>
+    </div>
+    <div class="dg-modal-body">
+      <p class="dg-modal-text">Your current run and progress will be lost if you quit.</p>
+      <div class="dg-modal-actions">
+        <button type="button" class="gbtn gbtn-teal" id="dg-continue-btn">Resume Game</button>
+        <button type="button" class="gbtn gbtn-outline" id="dg-quit-btn">Quit to Welcome Page</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+
+/* ==============================================
+   AUDIO SYNTHESIS & SFX ENGINE
+   ============================================== */
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.muted = localStorage.getItem('reset_sound_muted') === 'true';
+    this.bgmTimer = null;
+    this.bgmPlaying = false;
+    this.bgmStep = 0;
+    document.addEventListener('DOMContentLoaded', () => this.updateMuteButtons());
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+  setMuted(m) {
+    this.muted = m;
+    try { localStorage.setItem('reset_sound_muted', m ? 'true' : 'false'); } catch (e) {}
+    this.updateMuteButtons();
+    if (this.muted) {
+      this.stopBgm();
+    } else {
+      const isGameActive = document.getElementById('distracted-game-screen') && document.getElementById('distracted-game-screen').classList.contains('active');
+      if (isGameActive && typeof DG !== 'undefined' && DG && DG.running) {
+        this.startBgm();
+      }
+    }
+  }
+  toggleMute() {
+    this.init();
+    this.setMuted(!this.muted);
+    if (!this.muted) this.point();
+    return this.muted;
+  }
+  updateMuteButtons() {
+    document.querySelectorAll('.sound-toggle-btn').forEach(btn => {
+      btn.textContent = this.muted ? '🔇' : '🔊';
+      btn.setAttribute('aria-label', this.muted ? 'Unmute game sounds' : 'Mute game sounds');
+      btn.title = this.muted ? 'Sound Muted (tap to unmute)' : 'Sound On (tap to mute)';
+    });
+  }
+  startBgm() {
+    if (this.muted || this.bgmPlaying) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      this.bgmPlaying = true;
+      this.playNextBgmMote();
+    } catch(e) {}
+  }
+  playNextBgmMote() {
+    if (!this.bgmPlaying || this.muted || !this.ctx) return;
+    try {
+      const scale = [329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 293.66];
+      const freq = scale[this.bgmStep % scale.length];
+      this.bgmStep++;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      
+      const now = this.ctx.currentTime;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.022, now + 0.22);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
+      
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 1.45);
+
+      this.bgmTimer = setTimeout(() => {
+        this.playNextBgmMote();
+      }, 1500);
+    } catch(e) {}
+  }
+  stopBgm() {
+    this.bgmPlaying = false;
+    if (this.bgmTimer) {
+      clearTimeout(this.bgmTimer);
+      this.bgmTimer = null;
+    }
+  }
+  playTone(freq, type = 'sine', duration = 0.15, vol = 0.12) {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch(e) {}
+  }
+  btnClick() { this.playTone(480, 'sine', 0.06, 0.06); }
+  step() { this.playTone(240 + Math.random() * 30, 'triangle', 0.04, 0.03); }
+  point() {
+    if (this.muted) return;
+    this.playTone(660, 'sine', 0.09, 0.08);
+    setTimeout(() => this.playTone(880, 'sine', 0.14, 0.09), 60);
+  }
+  collect() { this.point(); }
+  hit() {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.16);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.16);
+    } catch(e) {}
+  }
+  damage() { this.hit(); }
+  warn() { this.hit(); }
+  positive() {
+    if (this.muted) return;
+    [523.25, 659.25, 783.99].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.18, 0.08), i * 70);
+    });
+  }
+  win() {
+    if (this.muted) return;
+    [440, 554.37, 659.25, 880].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'triangle', 0.22, 0.09), i * 90);
+    });
+  }
+  lose() {
+    if (this.muted) return;
+    [370, 330, 294, 220].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.22, 0.08), i * 110);
+    });
+  }
+}
+const sfx = new SoundEngine();
+
+function createPixelDecor() {
+  const c = document.getElementById('pixel-decor');
+  if (!c) return;
+  const cols = ['#152B4A','#2ECDA6','#2196F3','#E87830','#FFCA28','#00C853'];
+  const n = window.innerWidth < 640 ? 14 : 28;
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div');
+    p.className = 'pix';
+    const s = Math.random() * 6 + 3;
+    Object.assign(p.style, {
+      width: s + 'px',
+      height: s + 'px',
+      left: (Math.random() * 96 + 2) + '%',
+      top: (Math.random() * 96 + 2) + '%',
+      background: cols[Math.floor(Math.random() * cols.length)],
+      animationDelay: (Math.random() * 20) + 's',
+      animationDuration: (Math.random() * 12 + 16) + 's'
+    });
+    c.appendChild(p);
+  }
+}
+createPixelDecor();
+
+function showScreen(hideId, showId) {
+  const hideEl = document.getElementById(hideId);
+  if (hideEl) hideEl.classList.remove('active', 'fade-in');
+  const showEl = document.getElementById(showId);
+  if (showEl) {
+    showEl.classList.add('active', 'fade-in');
+    showEl.scrollTop = 0;
+  }
+  window.scrollTo(0, 0);
+  document.documentElement.classList.toggle('dg-playing', showId === 'distracted-game-screen');
+}
+
+function goBackToSelection() {
+  window.location.href = 'index.html#selection';
+}
+
+
+function backToResults(charKey) {
+  showScreen('distracted-guidance-screen', 'distracted-final-score-screen', 400);
+}
+
+document.addEventListener('keydown', e => {
+  const dgs = document.getElementById('distracted-game-screen');
+  if (dgs && dgs.classList.contains('active') && typeof DG !== 'undefined' && DG.running) {
+    if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+      e.preventDefault();
+      triggerDistractedJump();
+    }
+  }
+});
+
+const D_LEVEL_CONFIGS = [
+  {
+    name: 'LEVEL 1 — DIGITAL DISTRACTIONS',
+    time: 60.0,
+    speed: 140,
+    finishX: 2400,
+    desc: 'Basic jumps and single-tier study platforms',
+    obstacles: 5,
+    movingDistractions: false
+  },
+  {
+    name: 'LEVEL 2 — NOTIFICATION OVERLOAD',
+    time: 45.0,
+    speed: 160,
+    finishX: 2700,
+    desc: 'Elevated multi-tier platforms requiring double jump timing',
+    obstacles: 8,
+    movingDistractions: true
+  },
+  {
+    name: 'LEVEL 3 — FOCUS UNDER PRESSURE',
+    time: 30.0,
+    speed: 175,
+    finishX: 2900,
+    desc: 'Stepped study bridges across gaps and dense distraction alerts',
+    obstacles: 12,
+    movingDistractions: true
+  }
+];
+
+const DG = {
+  level: 1,
+  sessionAttempt: 1,
+  levelsCompleted: 0,
+  levelAttempt: 1,
+  running: false,
+  raf: null,
+  timer: 60.0,
+  timerInterval: null,
+  score: 0,
+  distractionPercent: 0,
+  booksCollected: 0,
+  tokensCollected: 0,
+  notificationHits: 0,
+  totalPossibleCollectibles: 0,
+  levelStats: [],
+  player: {
+    x: 80,
+    y: 348,
+    vx: 145,
+    vy: 0,
+    w: 44,        // Collision width
+    h: 72,        // Collision height
+    renderW: 64,  // Drawn width
+    renderH: 78,  // Drawn height (crisp, prominent, slightly bigger)
+    grounded: true,
+    invulnerable: 0,
+    jumpBuffered: 0,
+    coyoteTime: 0
+  },
+  cameraX: 0,
+  finishX: 2800,
+  groundY: 420,
+  platforms: [],
+  collectibles: [],
+  distractions: [],
+  barriers: [],
+  particles: [],
+  floatingTexts: [],
+  img: null,
+  lastTS: 0,
+  toastTO: null,
+  flashTO: null,
+  touchSetupDone: false
+};
+
+// Preload user-provided Distracted character image
+const _dImg = new Image();
+_dImg.src = 'distracted.png';
+DG.img = _dImg;
+
+function buildDistractedLevel(lvl) {
+  const cfg = D_LEVEL_CONFIGS[lvl - 1];
+  DG.level = lvl;
+  DG.timer = cfg.time;
+  DG.distractionPercent = 0;
+  DG.booksCollected = 0;
+  DG.tokensCollected = 0;
+  DG.notificationHits = 0;
+  DG.finishX = cfg.finishX;
+  DG.groundY = 420;
+  DG.platforms = [];
+  DG.collectibles = [];
+  DG.distractions = [];
+  DG.barriers = [];
+  DG.particles = [];
+  DG.floatingTexts = [];
+
+  DG.player.w = 44;
+  DG.player.h = 72;
+  DG.player.renderW = 64;
+  DG.player.renderH = 78;
+  DG.player.x = 80;
+  DG.player.y = DG.groundY - DG.player.h;
+  DG.player.vx = cfg.speed;
+  DG.player.vy = 0;
+  DG.player.grounded = true;
+  DG.player.jumps = 0;
+  DG.player.canDoubleJump = false;
+  DG.player.invulnerable = 0;
+  DG.player.jumpBuffered = 0;
+  DG.player.coyoteTime = 0;
+  DG.cameraX = 0;
+
+  let totalBooks = 0;
+  let totalTokens = 0;
+
+  if (lvl === 1) {
+    // LEVEL 1: Gentle spacing, wide study tables (y = 315), reachable with single jump
+    const platX = [380, 760, 1160, 1560, 1940];
+    for (const px of platX) {
+      DG.platforms.push({ x: px, y: 315, w: 220, h: 18 });
+      // Book on table
+      DG.collectibles.push({ type: 'book', x: px + 110, y: 285, baseY: 285, w: 28, h: 24, collected: false });
+      totalBooks++;
+      // Tokens on sides
+      DG.collectibles.push({ type: 'token', x: px + 40, y: 288, baseY: 288, w: 22, h: 22, collected: false });
+      DG.collectibles.push({ type: 'token', x: px + 180, y: 288, baseY: 288, w: 22, h: 22, collected: false });
+      totalTokens += 2;
+    }
+
+    // Ground barriers
+    const barX = [580, 980, 1380, 1780];
+    for (const bx of barX) {
+      DG.barriers.push({ x: bx, y: DG.groundY - 42, w: 38, h: 42 });
+      DG.collectibles.push({ type: 'token', x: bx + 19, y: DG.groundY - 95, baseY: DG.groundY - 95, w: 22, h: 22, collected: false });
+      totalTokens++;
+    }
+
+    // 5 Predictable notification alerts (slow horizontal patrol)
+    const distData = [
+      { x: 490, y: 260, type: 'message' },
+      { x: 880, y: 330, type: 'bell' },
+      { x: 1280, y: 260, type: 'like' },
+      { x: 1680, y: 330, type: 'message' },
+      { x: 2060, y: 260, type: 'heart' }
+    ];
+    for (const d of distData) {
+      DG.distractions.push({
+        type: d.type,
+        x: d.x,
+        baseX: d.x,
+        y: d.y,
+        baseY: d.y,
+        w: 36,
+        h: 36,
+        isMoving: true,
+        patrolX: 35,
+        speed: 1.2,
+        hit: false
+      });
+    }
+  } else if (lvl === 2) {
+    // LEVEL 2: Multi-tier platforms (Lower tier y=320, Upper tier y=225 requiring double jump!)
+    const pConfigs = [
+      { x: 360, y: 320, w: 200 },
+      { x: 590, y: 225, w: 190 }, // Double jump required!
+      { x: 920, y: 320, w: 190 },
+      { x: 1140, y: 225, w: 200 }, // Upper tier
+      { x: 1480, y: 320, w: 200 },
+      { x: 1720, y: 225, w: 200 },
+      { x: 2080, y: 320, w: 190 },
+      { x: 2310, y: 225, w: 190 }
+    ];
+    for (const pc of pConfigs) {
+      DG.platforms.push({ x: pc.x, y: pc.y, w: pc.w, h: 18 });
+      DG.collectibles.push({ type: 'book', x: pc.x + pc.w * 0.5, y: pc.y - 30, baseY: pc.y - 30, w: 28, h: 24, collected: false });
+      totalBooks++;
+      DG.collectibles.push({ type: 'token', x: pc.x + 35, y: pc.y - 25, baseY: pc.y - 25, w: 22, h: 22, collected: false });
+      totalTokens++;
+    }
+
+    // Ground barriers
+    const barX = [480, 800, 1340, 1960];
+    for (const bx of barX) {
+      DG.barriers.push({ x: bx, y: DG.groundY - 42, w: 38, h: 42 });
+    }
+
+    // Vertical bobbing notification alerts
+    const distData = [
+      { x: 450, y: 270, type: 'message' },
+      { x: 740, y: 310, type: 'bell' },
+      { x: 1040, y: 270, type: 'like' },
+      { x: 1380, y: 310, type: 'message' },
+      { x: 1630, y: 270, type: 'bell' },
+      { x: 1980, y: 310, type: 'heart' },
+      { x: 2230, y: 270, type: 'like' },
+      { x: 2480, y: 310, type: 'message' }
+    ];
+    for (const d of distData) {
+      DG.distractions.push({
+        type: d.type,
+        x: d.x,
+        baseX: d.x,
+        y: d.y,
+        baseY: d.y,
+        w: 36,
+        h: 36,
+        isMoving: true,
+        patrolY: 32,
+        speed: 1.8,
+        hit: false
+      });
+    }
+  } else {
+    // LEVEL 3: Focus Under Pressure — Stepped bridges across gaps requiring confident double jumping
+    const pConfigs = [
+      { x: 350, y: 315, w: 180 },
+      { x: 580, y: 220, w: 190 },
+      { x: 840, y: 315, w: 180 },
+      { x: 1080, y: 220, w: 190 },
+      { x: 1340, y: 315, w: 180 },
+      { x: 1580, y: 220, w: 190 },
+      { x: 1840, y: 315, w: 180 },
+      { x: 2090, y: 220, w: 190 },
+      { x: 2360, y: 315, w: 190 },
+      { x: 2600, y: 220, w: 190 }
+    ];
+    for (const pc of pConfigs) {
+      DG.platforms.push({ x: pc.x, y: pc.y, w: pc.w, h: 18 });
+      DG.collectibles.push({ type: 'book', x: pc.x + pc.w * 0.5, y: pc.y - 30, baseY: pc.y - 30, w: 28, h: 24, collected: false });
+      totalBooks++;
+      DG.collectibles.push({ type: 'token', x: pc.x + 35, y: pc.y - 25, baseY: pc.y - 25, w: 22, h: 22, collected: false });
+      totalTokens++;
+    }
+
+    // Ground barriers
+    const barX = [480, 740, 1240, 1740, 2240];
+    for (const bx of barX) {
+      DG.barriers.push({ x: bx, y: DG.groundY - 42, w: 38, h: 42 });
+    }
+
+    // 12 Distractions with rhythmic patrols
+    const distData = [
+      { x: 460, y: 260, type: 'message' },
+      { x: 710, y: 335, type: 'bell' },
+      { x: 960, y: 260, type: 'like' },
+      { x: 1210, y: 335, type: 'message' },
+      { x: 1460, y: 260, type: 'heart' },
+      { x: 1710, y: 335, type: 'bell' },
+      { x: 1960, y: 260, type: 'message' },
+      { x: 2210, y: 335, type: 'like' },
+      { x: 2470, y: 260, type: 'heart' },
+      { x: 2680, y: 335, type: 'bell' }
+    ];
+    for (const d of distData) {
+      DG.distractions.push({
+        type: d.type,
+        x: d.x,
+        baseX: d.x,
+        y: d.y,
+        baseY: d.y,
+        w: 36,
+        h: 36,
+        isMoving: true,
+        patrolX: 25,
+        speed: 2.0,
+        hit: false
+      });
+    }
+  }
+
+  DG.totalPossibleCollectibles = totalBooks + totalTokens;
+
+  // Update HUD
+  document.getElementById('distracted-hud-level').textContent = cfg.name;
+  updDistractedAttemptHud();
+  updDistractedTimerHud();
+  updDistractedMeterHud();
+  updDistractedCountersHud();
+  resizeDistractedCanvas();
+  setupDistractedTouchControls();
+}
+
+function updDistractedTimerHud() {
+  const el = document.getElementById('distracted-hud-timer');
+  if (!el) return;
+  el.textContent = Math.max(0, Math.ceil(DG.timer));
+  el.classList.toggle('danger', DG.timer <= 10);
+}
+
+function updDistractedMeterHud() {
+  const f = document.getElementById('distracted-m-fill');
+  const p = document.getElementById('distracted-m-pct');
+  if (!f || !p) return;
+  const v = Math.round(DG.distractionPercent);
+  f.style.width = v + '%';
+  f.className = 'hud-m-fill' + (v >= 70 ? ' crit' : v >= 40 ? ' warn' : '');
+  p.textContent = v + '%';
+}
+
+function updDistractedCountersHud() {
+  const bEl = document.getElementById('distracted-hud-books');
+  const tEl = document.getElementById('distracted-hud-tokens');
+  if (bEl) bEl.textContent = DG.booksCollected;
+  if (tEl) tEl.textContent = DG.tokensCollected;
+
+  const pf = document.getElementById('distracted-p-fill');
+  if (pf) {
+    const pct = Math.min(100, Math.max(0, Math.round((DG.player.x / DG.finishX) * 100)));
+    pf.style.width = pct + '%';
+  }
+}
+
+function updDistractedAttemptHud() {
+  const el = document.getElementById('distracted-hud-attempt');
+  if (el) {
+    el.textContent = 'ATTEMPT ' + (DG.sessionAttempt || 1) + '/2';
+    el.classList.toggle('second-attempt', (DG.sessionAttempt || 1) === 2);
+  }
+}
+
+function distractedToast(msg, type = '') {
+  const el = document.getElementById('distracted-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+  if (DG.toastTO) clearTimeout(DG.toastTO);
+  DG.toastTO = setTimeout(() => el.className = '', 1800);
+}
+
+function distractedFlash(color) {
+  const el = document.getElementById('distracted-flash');
+  if (!el) return;
+  el.style.background = color;
+  el.classList.add('show');
+  if (DG.flashTO) clearTimeout(DG.flashTO);
+  DG.flashTO = setTimeout(() => el.classList.remove('show'), 220);
+}
+
+function triggerDistractedJump() {
+  if (!DG.running) return;
+  const p = DG.player;
+
+  if (p.grounded || p.coyoteTime > 0) {
+    // FIRST JUMP
+    p.vy = -600;
+    p.grounded = false;
+    p.coyoteTime = 0;
+    p.jumps = 1;
+    p.canDoubleJump = true;
+    sfx.step();
+
+    // Ground dust particles
+    for (let i = 0; i < 5; i++) {
+      DG.particles.push({
+        x: p.x + 22 + (Math.random() * 12 - 6),
+        y: p.y + p.h,
+        vx: (Math.random() - 0.5) * 80,
+        vy: -Math.random() * 50,
+        alpha: 0.85,
+        life: 0.35,
+        color: '#2ECDA6'
+      });
+    }
+  } else if (p.jumps === 1 && p.canDoubleJump && !p.grounded) {
+    // RELIABLE SECOND JUMP (AIRBORNE DOUBLE JUMP)
+    p.vy = -540;
+    p.jumps = 2;
+    p.canDoubleJump = false;
+    sfx.step();
+
+    // Double Jump Air Ring Particles
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      DG.particles.push({
+        x: p.x + 22,
+        y: p.y + p.h - 10,
+        vx: Math.cos(angle) * 90,
+        vy: Math.sin(angle) * 45 + 10,
+        alpha: 1,
+        life: 0.45,
+        color: '#2ECDA6'
+      });
+    }
+    distractedToast('✦ DOUBLE JUMP!', 'teal');
+  } else {
+    // Jump buffer (0.12s)
+    p.jumpBuffered = 0.12;
+  }
+}
+
+function setupDistractedTouchControls() {
+  if (DG.touchSetupDone) return;
+  const wrap = document.querySelector('.distracted-canvas-wrap');
+  if (!wrap) return;
+
+  // One handler for finger, mouse and pen: tap / click anywhere on the play area = jump.
+  // (A second tap in mid-air is the existing double jump.) Using pointerdown only means
+  // a single tap can never fire twice (no touchstart + mousedown + click duplicates).
+  wrap.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.cancelable) e.preventDefault();
+    if (!DG.running) return;
+    triggerDistractedJump();
+  });
+
+  // Stop scrolling, long-press menus, text selection and pinch/double-tap zoom inside the play area
+  const block = (e) => { if (e.cancelable) e.preventDefault(); };
+  wrap.addEventListener('touchmove', block, { passive: false });
+  wrap.addEventListener('contextmenu', block);
+  wrap.addEventListener('selectstart', block);
+  wrap.addEventListener('dragstart', block);
+  wrap.addEventListener('gesturestart', block);
+
+  DG.touchSetupDone = true;
+}
+
+function resizeDistractedCanvas() {
+  const wrap = document.querySelector('.distracted-canvas-wrap');
+  const cv = document.getElementById('distracted-canvas');
+  if (!wrap || !cv || !wrap.clientWidth || !wrap.clientHeight) return;
+
+  // Tell the CSS how tall the HUD is (used to place toasts just under it)
+  const topbar = document.querySelector('#distracted-game-screen .game-topbar');
+  if (topbar) document.documentElement.style.setProperty('--dg-top', topbar.offsetHeight + 'px');
+
+  // Fit the 960x520 canvas into whatever room the play area really has (keeps the ratio)
+  const cs = getComputedStyle(wrap);
+  const availW = Math.max(120, wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+  const availH = Math.max(90, wrap.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom));
+
+  const targetRatio = cv.width / cv.height;
+  let w = availW;
+  let h = Math.floor(w / targetRatio);
+  if (h > availH) {
+    h = Math.floor(availH);
+    w = Math.floor(h * targetRatio);
+  }
+  cv.style.width = w + 'px';
+  cv.style.height = h + 'px';
+}
+
+// Re-fit on every kind of viewport change (rotation, browser bars, fullscreen, window resize)
+let _dgResizeRaf = 0;
+function scheduleDistractedResize() {
+  if (_dgResizeRaf) return;
+  _dgResizeRaf = requestAnimationFrame(() => {
+    _dgResizeRaf = 0;
+    const gs = document.getElementById('distracted-game-screen');
+    if (gs && gs.classList.contains('active')) resizeDistractedCanvas();
+  });
+}
+window.addEventListener('resize', scheduleDistractedResize);
+window.addEventListener('orientationchange', () => {
+  scheduleDistractedResize();
+  setTimeout(scheduleDistractedResize, 250); // some browsers report the new size late
+});
+document.addEventListener('fullscreenchange', scheduleDistractedResize);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', scheduleDistractedResize);
+if (window.ResizeObserver) {
+  const _dgWrap = document.querySelector('.distracted-canvas-wrap');
+  if (_dgWrap) new ResizeObserver(scheduleDistractedResize).observe(_dgWrap);
+}
+
+/* ==============================================
+   PAUSE / RESUME (quit modal + rotate-phone notice)
+   Several reasons can pause the game at once; it only resumes when all are cleared.
+   ============================================== */
+const DPause = { reasons: new Set(), wasRunning: false, startedAt: 0 };
+
+function distractedPause(reason) {
+  if (DPause.reasons.size === 0) {
+    DPause.wasRunning = !!DG.running;
+    DPause.startedAt = DG.running ? performance.now() : 0;
+  }
+  DPause.reasons.add(reason);
+  if (DG.running) {
+    DG.running = false; // stops the loop and freezes the countdown (its interval checks this flag)
+    if (DG.raf) { cancelAnimationFrame(DG.raf); DG.raf = null; }
+    sfx.stopBgm();
+  }
+}
+
+function distractedResume(reason) {
+  DPause.reasons.delete(reason);
+  if (DPause.reasons.size === 0 && DPause.wasRunning) {
+    DPause.wasRunning = false;
+    // keep time-based animations (moving notifications) continuous across the pause
+    if (DPause.startedAt) DG.pausedTotal = (DG.pausedTotal || 0) + (performance.now() - DPause.startedAt) / 1000;
+    DPause.startedAt = 0;
+    startDistractedLoop();
+    sfx.startBgm();
+  }
+}
+
+/* ==============================================
+   QUIT CONFIRMATION (tap the RE:SET logo during gameplay)
+   ============================================== */
+function dgQuitModalEl() { return document.getElementById('dg-quit-modal'); }
+
+function openDistractedQuitModal() {
+  const m = dgQuitModalEl();
+  const gs = document.getElementById('distracted-game-screen');
+  if (!m || !m.hidden || !gs || !gs.classList.contains('active')) return;
+  distractedPause('quit');
+  m.hidden = false;
+  const b = document.getElementById('dg-continue-btn');
+  if (b) b.focus({ preventScroll: true });
+}
+
+function closeDistractedQuitModal() {
+  const m = dgQuitModalEl();
+  if (!m || m.hidden) return;
+  m.hidden = true;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); // so Space keeps meaning "jump"
+  distractedResume('quit');
+}
+
+function quitDistractedToWelcome() {
+  window.location.href = 'index.html';
+}
+
+/* Browser Back Button & Quit Confirmation Handler */
+function setupBackNavigationGuard() {
+  // Push a state when starting the game
+  try {
+    history.pushState({ inGame: true }, document.title, window.location.href);
+  } catch(e) {}
+
+  window.addEventListener('popstate', (e) => {
+    try {
+      history.pushState({ inGame: true }, document.title, window.location.href);
+    } catch(err) {}
+    openDistractedQuitModal();
+  });
+}
+
+function setupDistractedQuit() {
+  const logo = document.getElementById('distracted-logo-btn');
+  const cont = document.getElementById('dg-continue-btn');
+  const quit = document.getElementById('dg-quit-btn');
+  const modal = dgQuitModalEl();
+  if (logo) logo.addEventListener('click', openDistractedQuitModal);
+  if (cont) cont.addEventListener('click', closeDistractedQuitModal);
+  if (quit) quit.addEventListener('click', quitDistractedToWelcome);
+  if (modal) {
+    // keep stray touches on the dim backdrop from reaching the game underneath
+    modal.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
+  }
+  // Esc toggles the same dialog on desktop
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const m = dgQuitModalEl();
+    if (m && !m.hidden) { closeDistractedQuitModal(); return; }
+    openDistractedQuitModal();
+  });
+}
+setupDistractedQuit();
+setupBackNavigationGuard();
+
+/* ---- Distracted Game Loop ---- */
+function startDistractedLoop() {
+  if (DPause.reasons.size > 0) { DPause.wasRunning = true; return; } // paused (quit dialog / rotate notice): start when it clears
+  DG.running = true;
+  DG.lastTS = 0;
+  if (DG.raf) cancelAnimationFrame(DG.raf);
+  DG.raf = requestAnimationFrame(distractedGameLoop);
+}
+
+function startDistractedTimer() {
+  if (DG.timerInterval) clearInterval(DG.timerInterval);
+  DG.timerInterval = setInterval(() => {
+    if (!DG.running) return;
+    DG.timer -= 0.5;
+    updDistractedTimerHud();
+    if (DG.timer <= 0) {
+      clearInterval(DG.timerInterval);
+      DG.timerInterval = null;
+      distractedEndGame('time');
+    }
+  }, 500);
+}
+
+function distractedGameLoop(ts) {
+  if (!DG.running) return;
+  const dt = DG.lastTS ? Math.min((ts - DG.lastTS) / 1000, 0.08) : 0;
+  DG.lastTS = ts;
+
+  const clock = ts / 1000 - (DG.pausedTotal || 0);
+  updateDistractedGame(dt, clock);
+  drawDistractedGame(clock);
+
+  DG.raf = requestAnimationFrame(distractedGameLoop);
+}
+
+function updateDistractedGame(dt, now) {
+  const p = DG.player;
+
+  // Horizontal motion
+  p.x += p.vx * dt;
+
+  // Jump buffer & coyote time countdown
+  if (p.jumpBuffered > 0) p.jumpBuffered -= dt;
+  if (p.coyoteTime > 0) p.coyoteTime -= dt;
+  if (p.invulnerable > 0) p.invulnerable -= dt;
+
+  // Vertical physics
+  p.vy += 1500 * dt; // gravity
+  const prevY = p.y;
+  p.y += p.vy * dt;
+
+  let landed = false;
+
+  // Check platforms
+  for (const plat of DG.platforms) {
+    if (p.x + p.w * 0.7 > plat.x && p.x + p.w * 0.3 < plat.x + plat.w) {
+      if (prevY + p.h <= plat.y + 12 && p.y + p.h >= plat.y && p.vy >= 0) {
+        p.y = plat.y - p.h;
+        p.vy = 0;
+        landed = true;
+        break;
+      }
+    }
+  }
+
+  // Check main ground (y = 420)
+  if (!landed) {
+    if (p.y + p.h >= DG.groundY && p.vy >= 0) {
+      p.y = DG.groundY - p.h;
+      p.vy = 0;
+      landed = true;
+    }
+  }
+
+  // Physical barriers (blocks) collision
+  // 1. Prevent character from clipping or going into block.
+  // 2. Front collision stops character at front of block and inflicts -3s time penalty.
+  // 3. Landing on top allows smooth traversal over block.
+  for (const bar of DG.barriers) {
+    if (p.x + p.w > bar.x && p.x < bar.x + bar.w) {
+      // Landing on top of barrier
+      if (prevY + p.h <= bar.y + 12 && p.y + p.h >= bar.y && p.vy >= 0) {
+        p.y = bar.y - p.h;
+        p.vy = 0;
+        landed = true;
+      }
+      // Collided with front/side of barrier
+      else if (p.y + p.h > bar.y + 4) {
+        p.x = bar.x - p.w; // Block entry: clamp firmly in front of barrier!
+        if (p.invulnerable <= 0) {
+          DG.notificationHits++;
+          DG.timer = Math.max(0, DG.timer - 3); // Deduct 3 seconds
+          DG.distractionPercent = Math.min(100, DG.distractionPercent + 8);
+          p.invulnerable = 1.0; // 1s buffer so player isn't penalized repeatedly while jumping
+          distractedToast('⚠ BLOCKED! −3s', 'warn');
+          distractedFlash('rgba(232, 120, 48, 0.3)');
+          sfx.damage();
+          updDistractedTimerHud();
+          updDistractedMeterHud();
+        }
+      }
+    }
+  }
+
+  p.grounded = landed;
+  if (landed) {
+    p.jumps = 0;
+    p.canDoubleJump = false;
+    p.coyoteTime = 0.1;
+    if (p.jumpBuffered > 0) {
+      p.jumpBuffered = 0;
+      triggerDistractedJump();
+    }
+  }
+
+  // Camera smooth follow
+  DG.cameraX = p.x - 140;
+
+  // Collectibles collisions
+  for (const c of DG.collectibles) {
+    if (c.collected) continue;
+    c.y = c.baseY + Math.sin(now * 4 + c.x * 0.05) * 4;
+
+    if (p.x + p.w > c.x - c.w * 0.5 && p.x < c.x + c.w * 0.5 &&
+        p.y + p.h > c.y - c.h * 0.5 && p.y < c.y + c.h * 0.5) {
+      c.collected = true;
+      sfx.point();
+      if (c.type === 'book') {
+        DG.booksCollected++;
+        DG.floatingTexts.push({ x: c.x, y: c.y - 10, text: '+1 BOOK', color: '#2ECDA6', life: 0.8 });
+        for (let i = 0; i < 6; i++) {
+          DG.particles.push({
+            x: c.x, y: c.y,
+            vx: (Math.random() - 0.5) * 80,
+            vy: -Math.random() * 80,
+            alpha: 1, life: 0.45, color: '#2ECDA6'
+          });
+        }
+      } else {
+        DG.tokensCollected++;
+        DG.floatingTexts.push({ x: c.x, y: c.y - 10, text: '+1 TOKEN', color: '#FFCA28', life: 0.8 });
+        for (let i = 0; i < 5; i++) {
+          DG.particles.push({
+            x: c.x, y: c.y,
+            vx: (Math.random() - 0.5) * 70,
+            vy: -Math.random() * 70,
+            alpha: 1, life: 0.45, color: '#FFCA28'
+          });
+        }
+      }
+      updDistractedCountersHud();
+    }
+  }
+
+  // Distraction obstacles collisions (Messages, Bells, Likes, Hearts)
+  for (const dist of DG.distractions) {
+    if (dist.isMoving) {
+      if (dist.patrolX) {
+        dist.x = dist.baseX + Math.sin(now * (dist.speed || 1.5)) * dist.patrolX;
+      }
+      if (dist.patrolY) {
+        dist.y = dist.baseY + Math.sin(now * (dist.speed || 1.8)) * dist.patrolY;
+      }
+    }
+    if (p.x + p.w * 0.75 > dist.x - dist.w * 0.5 &&
+        p.x + p.w * 0.25 < dist.x + dist.w * 0.5 &&
+        p.y + p.h * 0.85 > dist.y - dist.h * 0.5 &&
+        p.y + p.h * 0.15 < dist.y + dist.h * 0.5) {
+      if (p.invulnerable <= 0) {
+        dist.hit = true;
+        DG.notificationHits++;
+        DG.timer = Math.max(0, DG.timer - 3); // Deduct 3 seconds
+        DG.distractionPercent = Math.min(100, DG.distractionPercent + 10);
+        p.invulnerable = 1.3;
+        distractedToast('⚡ NOTIFICATION PING! −3s  +10%', 'danger');
+        distractedFlash('rgba(229, 57, 53, 0.25)');
+        sfx.damage();
+        updDistractedTimerHud();
+        updDistractedMeterHud();
+
+        for (let i = 0; i < 8; i++) {
+          DG.particles.push({
+            x: dist.x, y: dist.y,
+            vx: (Math.random() - 0.5) * 120,
+            vy: -Math.random() * 90,
+            alpha: 1, life: 0.5, color: '#e53935'
+          });
+        }
+      }
+    }
+  }
+
+  // Update particles
+  for (let i = DG.particles.length - 1; i >= 0; i--) {
+    const pt = DG.particles[i];
+    pt.x += pt.vx * dt;
+    pt.y += pt.vy * dt;
+    pt.life -= dt;
+    if (pt.life <= 0) DG.particles.splice(i, 1);
+  }
+
+  // Update floating text
+  for (let i = DG.floatingTexts.length - 1; i >= 0; i--) {
+    const ft = DG.floatingTexts[i];
+    ft.y -= 35 * dt;
+    ft.life -= dt;
+    if (ft.life <= 0) DG.floatingTexts.splice(i, 1);
+  }
+
+  // Check finish line
+  if (p.x >= DG.finishX) {
+    distractedLevelWon();
+  }
+
+  updDistractedCountersHud();
+}
+
+/* ---- Render Focus Run Canvas ---- */
+function drawDistractedGame(now) {
+  const cv = document.getElementById('distracted-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const camX = DG.cameraX;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // 1. Sky Gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#E1F0FA');
+  skyGrad.addColorStop(0.65, '#F4F9FD');
+  skyGrad.addColorStop(1, '#FFFFFF');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Parallax clouds
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+  for (let i = 0; i < 8; i++) {
+    const cx = ((i * 320 - camX * 0.12) % (W + 300)) - 100;
+    const cy = 60 + (i % 3) * 35;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+    ctx.arc(cx + 25, cy - 8, 26, 0, Math.PI * 2);
+    ctx.arc(cx + 50, cy - 8, 28, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 2. Far University Architecture Silhouettes
+  ctx.fillStyle = '#D6EAF8';
+  for (let i = -1; i < 8; i++) {
+    const bx = Math.floor(i * 240 - (camX * 0.2 % 240));
+    ctx.fillRect(bx, 240, 75, 180);
+    ctx.fillRect(bx + 90, 220, 55, 200);
+    ctx.beginPath();
+    ctx.arc(bx + 117, 220, 27, Math.PI, 0);
+    ctx.fill();
+    ctx.fillRect(bx + 160, 260, 60, 160);
+  }
+
+  // 3. Midground University Pavilions & Greenery
+  ctx.fillStyle = '#BEE3DB';
+  for (let i = -1; i < 9; i++) {
+    const hx = Math.floor(i * 200 - (camX * 0.45 % 200));
+    ctx.beginPath();
+    ctx.arc(hx + 100, 390, 120, Math.PI, 0);
+    ctx.fill();
+  }
+
+  // 4. Platforms & Ground
+  ctx.save();
+  ctx.translate(-camX, 0);
+
+  // Main Walkway / Ground
+  const gY = DG.groundY;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(camX - 50, gY, W + 100, H - gY);
+
+  // Top grass / teal border trim
+  ctx.fillStyle = '#2ECDA6';
+  ctx.fillRect(camX - 50, gY, W + 100, 8);
+  ctx.fillStyle = '#152B4A';
+  ctx.fillRect(camX - 50, gY + 8, W + 100, 2);
+
+  // Paver tile lines on ground
+  ctx.strokeStyle = 'rgba(21, 43, 74, 0.08)';
+  ctx.lineWidth = 1.5;
+  const startTile = Math.floor((camX - 50) / 45) * 45;
+  for (let tx = startTile; tx < camX + W + 50; tx += 45) {
+    ctx.beginPath();
+    ctx.moveTo(tx, gY + 10);
+    ctx.lineTo(tx, H);
+    ctx.stroke();
+  }
+
+  // Campus Study Platforms
+  for (const plat of DG.platforms) {
+    if (plat.x + plat.w < camX || plat.x > camX + W) continue;
+    ctx.fillStyle = 'rgba(21, 43, 74, 0.07)';
+    ctx.fillRect(plat.x + 3, plat.y + 3, plat.w, plat.h);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.strokeStyle = '#152B4A';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(plat.x, plat.y, plat.w, plat.h, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#2ECDA6';
+    ctx.fillRect(plat.x + 4, plat.y + 2, plat.w - 8, 3.5);
+  }
+
+  // Physical Barrier Blocks (Hazard Stripes)
+  for (const bar of DG.barriers) {
+    if (bar.x + bar.w < camX || bar.x > camX + W) continue;
+    ctx.fillStyle = '#F1F5F9';
+    ctx.strokeStyle = '#152B4A';
+    ctx.lineWidth = 2.5;
+    ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
+    ctx.strokeRect(bar.x, bar.y, bar.w, bar.h);
+
+    // Hazard orange zone on barrier
+    ctx.fillStyle = '#E87830';
+    ctx.fillRect(bar.x + 5, bar.y + 6, bar.w - 10, bar.h - 14);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px Space Grotesk,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⚠', bar.x + bar.w * 0.5, bar.y + 19);
+  }
+
+  // Collectibles (Books & Focus Tokens)
+  for (const c of DG.collectibles) {
+    if (c.collected || c.x + 30 < camX || c.x - 30 > camX + W) continue;
+
+    if (c.type === 'book') {
+      const bx = c.x - 14, by = c.y - 12;
+      ctx.shadowColor = 'rgba(46, 205, 166, 0.4)';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#2196F3';
+      ctx.fillRect(bx, by, 28, 24);
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#FFF8E1';
+      ctx.fillRect(bx + 4, by + 3, 22, 18);
+      ctx.fillStyle = '#2ECDA6';
+      ctx.fillRect(bx, by + 1, 6, 22);
+      ctx.fillStyle = '#E87830';
+      ctx.fillRect(bx + 14, by + 18, 4, 8);
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(bx, by, 28, 24);
+    } else {
+      ctx.shadowColor = 'rgba(255, 202, 40, 0.5)';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#FFCA28';
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#FFFDE7';
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#152B4A';
+      ctx.font = 'bold 9px Space Grotesk,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('★', c.x, c.y);
+    }
+  }
+
+  // Digital Distractions (Notifications)
+  for (const dist of DG.distractions) {
+    if (dist.x + 30 < camX || dist.x - 30 > camX + W) continue;
+
+    const dx = dist.x, dy = dist.y;
+    ctx.shadowColor = 'rgba(229, 57, 53, 0.4)';
+    ctx.shadowBlur = 9;
+
+    if (dist.type === 'message') {
+      ctx.fillStyle = '#2196F3';
+      ctx.beginPath();
+      ctx.roundRect(dx - 18, dy - 15, 36, 26, 6);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(dx - 6, dy + 11);
+      ctx.lineTo(dx - 12, dy + 18);
+      ctx.lineTo(dx + 2, dy + 11);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px Space Grotesk,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('💬', dx, dy - 2);
+    } else if (dist.type === 'bell') {
+      ctx.fillStyle = '#FFCA28';
+      ctx.beginPath();
+      ctx.arc(dx, dy - 3, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#e53935';
+      ctx.beginPath();
+      ctx.arc(dx + 10, dy - 12, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 8px Space Grotesk,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('!', dx + 10, dy - 12);
+      ctx.fillText('🔔', dx, dy - 3);
+    } else if (dist.type === 'heart') {
+      ctx.fillStyle = '#e53935';
+      ctx.beginPath();
+      ctx.roundRect(dx - 16, dy - 14, 32, 28, 6);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px Space Grotesk,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('❤️', dx, dy);
+    } else {
+      ctx.fillStyle = '#2196F3';
+      ctx.beginPath();
+      ctx.roundRect(dx - 16, dy - 14, 32, 28, 6);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#152B4A';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px Space Grotesk,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('👍', dx, dy);
+    }
+  }
+
+  // Finish Gate (Campus Study Portal)
+  const fx = DG.finishX;
+  if (fx > camX - 100 && fx < camX + W + 100) {
+    ctx.fillStyle = '#0E1D42';
+    ctx.fillRect(fx - 15, gY - 180, 24, 180);
+    ctx.fillRect(fx + 65, gY - 180, 24, 180);
+    ctx.fillRect(fx - 25, gY - 210, 124, 34);
+    ctx.fillStyle = '#2ECDA6';
+    ctx.fillRect(fx - 20, gY - 170, 114, 14);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px Space Grotesk,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('RE:SET STUDY ZONE', fx + 37, gY - 193);
+
+    const beamGrad = ctx.createLinearGradient(fx + 37, gY - 180, fx + 37, gY);
+    beamGrad.addColorStop(0, 'rgba(46, 205, 166, 0.45)');
+    beamGrad.addColorStop(1, 'rgba(46, 205, 166, 0.05)');
+    ctx.fillStyle = beamGrad;
+    ctx.fillRect(fx + 9, gY - 170, 56, 170);
+  }
+
+  // Particles
+  for (const pt of DG.particles) {
+    ctx.fillStyle = pt.color;
+    ctx.globalAlpha = Math.max(0, pt.life * 2);
+    ctx.fillRect(pt.x - 2.5, pt.y - 2.5, 5, 5);
+  }
+  ctx.globalAlpha = 1;
+
+  // Floating text
+  for (const ft of DG.floatingTexts) {
+    ctx.fillStyle = ft.color;
+    ctx.font = 'bold 13px Space Grotesk,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.globalAlpha = Math.max(0, ft.life / 0.8);
+    ctx.fillText(ft.text, ft.x, ft.y);
+  }
+  ctx.globalAlpha = 1;
+
+  // Draw Player Character (The Distracted — Slightly Larger Size: 64 x 78)
+  const p = DG.player;
+  const isBlinking = p.invulnerable > 0 && Math.floor(now * 15) % 2 === 0;
+
+  if (!isBlinking) {
+    ctx.save();
+    const bob = p.grounded ? Math.sin(now * 14) * 3 : 0;
+    const px = p.x;
+    const py = p.y + bob;
+
+    const rW = p.renderW || 64;
+    const rH = p.renderH || 78;
+    const rx = px - Math.floor((rW - p.w) * 0.5);
+    const ry = (p.y + p.h + bob) - rH;
+
+    if (!p.grounded) {
+      ctx.translate(px + p.w * 0.5, py + p.h * 0.5);
+      ctx.rotate(p.vy < 0 ? -0.08 : 0.06);
+      ctx.translate(-(px + p.w * 0.5), -(py + p.h * 0.5));
+    }
+
+    if (DG.img && DG.img.complete && DG.img.naturalWidth > 0) {
+      // Source crop inside 1024x1024 asset: x:210, y:200, w:602, h:738
+      ctx.drawImage(DG.img, 210, 200, 602, 738, rx, ry, rW, rH);
+    } else {
+      ctx.fillStyle = '#2ECDA6';
+      ctx.fillRect(px, py, p.w, p.h);
+    }
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+/* ---- Game Over (time ran out) ----
+   The timer already called this function but it was never defined, so running out of time
+   threw an error and the Game Over screen never appeared. It fills in the existing
+   Game Over screen elements; nothing else about the game changes. */
+function distractedEndGame(reason) {
+  DG.running = false;
+  if (DG.timerInterval) { clearInterval(DG.timerInterval); DG.timerInterval = null; }
+  if (DG.raf) { cancelAnimationFrame(DG.raf); DG.raf = null; }
+
+  sfx.lose();
+  sfx.stopBgm();
+
+  const attempt = DG.sessionAttempt || 1;
+  const canRetry = attempt < 2;
+
+  const badge = document.getElementById('distracted-go-badge');
+  if (badge) {
+    badge.textContent = 'ATTEMPT ' + attempt + ' OF 2 FAILED';
+    badge.className = 'go-badge' + (canRetry ? '' : ' danger');
+  }
+  const title = document.getElementById('distracted-go-title');
+  if (title) title.textContent = 'TIME RAN OUT';
+  const sub = document.getElementById('distracted-go-sub');
+  if (sub) sub.textContent = 'Digital notifications pulled your attention away.';
+  const msg = document.getElementById('distracted-go-attempt-msg');
+  if (msg) msg.textContent = canRetry
+    ? 'You have 1 retry remaining for this session.'
+    : 'No retries remaining. Let\'s see how you did.';
+  const fill = document.getElementById('distracted-go-m-fill');
+  if (fill) fill.style.width = Math.max(4, Math.round(DG.distractionPercent || 0)) + '%';
+
+  const btn = document.getElementById('distracted-go-retry-btn');
+  if (btn) {
+    if (canRetry) {
+      btn.textContent = '↔ RETRY LEVEL (ATTEMPT 2/2)';
+      btn.onclick = retryDistractedLevel;
+    } else {
+      btn.textContent = 'VIEW RESULTS →';
+      btn.onclick = showDistractedFinalScore;
+    }
+  }
+
+  showScreen('distracted-game-screen', 'distracted-game-over-screen', 450);
+}
+
+/* ---- Level Won & Game Over for The Distracted ---- */
+function distractedLevelWon() {
+  DG.running = false;
+  if (DG.timerInterval) { clearInterval(DG.timerInterval); DG.timerInterval = null; }
+  if (DG.raf) { cancelAnimationFrame(DG.raf); DG.raf = null; }
+
+  sfx.win();
+  sfx.stopBgm();
+
+  const cfg = D_LEVEL_CONFIGS[DG.level - 1];
+  const timeTaken = Math.max(1, Math.round(cfg.time - DG.timer));
+  const hits = DG.notificationHits || 0;
+  const books = DG.booksCollected || 0;
+  const tokens = DG.tokensCollected || 0;
+  const distraction = Math.round(DG.distractionPercent || 0);
+
+  DG.levelStats.push({
+    level: DG.level,
+    timeRemaining: Math.ceil(DG.timer),
+    timeTaken: timeTaken,
+    hits: hits,
+    books: books,
+    tokens: tokens,
+    finalDistraction: distraction
+  });
+  DG.levelsCompleted = Math.max(DG.levelsCompleted || 0, DG.level);
+
+  document.getElementById('distracted-lc-title').textContent = DG.level < 3 ? 'LEVEL ' + DG.level + ' COMPLETE' : 'LEVEL 3 MASTERED!';
+  document.getElementById('distracted-lc-attempt-tag').textContent = '✓ Cleared on Attempt ' + (DG.sessionAttempt || 1) + ' of 2';
+  document.getElementById('distracted-lc-time').textContent = Math.ceil(DG.timer) + 's';
+  document.getElementById('distracted-lc-books').textContent = books;
+  document.getElementById('distracted-lc-tokens').textContent = tokens;
+  document.getElementById('distracted-lc-hits').textContent = hits;
+
+  const nextBtn = document.getElementById('distracted-lc-next-btn');
+  if (nextBtn) {
+    if (DG.level >= 3) {
+      nextBtn.textContent = 'VIEW FINAL RESULTS →';
+      nextBtn.onclick = showDistractedFinalScore;
+    } else {
+      nextBtn.textContent = 'NEXT LEVEL →';
+      nextBtn.onclick = nextDistractedLevel;
+    }
+  }
+
+  showScreen('distracted-game-screen', 'distracted-level-complete-screen', 450);
+}
+
+
+function startDistractedGame() {
+  DG.level = 1;
+  DG.sessionAttempt = 1;
+  DG.levelsCompleted = 0;
+  DG.levelStats = [];
+  showScreen('distracted-instructions-screen', 'distracted-game-screen');
+  buildDistractedLevel(1);
+  startDistractedTimer();
+  startDistractedLoop();
+  sfx.startBgm();
+}
+
+function nextDistractedLevel() {
+  const nextLvl = DG.level + 1;
+  showScreen('distracted-level-complete-screen', 'distracted-game-screen', 500);
+  setTimeout(() => {
+    buildDistractedLevel(nextLvl);
+    startDistractedTimer();
+    startDistractedLoop();
+    sfx.startBgm();
+  }, 620);
+}
+
+function retryDistractedLevel() {
+  DG.sessionAttempt = 2;
+  showScreen('distracted-game-over-screen', 'distracted-game-screen', 500);
+  setTimeout(() => {
+    buildDistractedLevel(DG.level);
+    startDistractedTimer();
+    startDistractedLoop();
+    sfx.startBgm();
+  }, 620);
+}
+
+function restartDistractedGame() {
+  DG.level = 1;
+  DG.sessionAttempt = 1;
+  DG.levelsCompleted = 0;
+  DG.levelStats = [];
+  sfx.stopBgm();
+  showScreen('distracted-game-over-screen', 'distracted-instructions-screen', 500);
+}
+
+function playDistractedAgain() {
+  DG.level = 1;
+  DG.sessionAttempt = 1;
+  DG.levelsCompleted = 0;
+  DG.levelStats = [];
+  const activeScreen = document.getElementById('distracted-guidance-screen').classList.contains('active')
+    ? 'distracted-guidance-screen'
+    : 'distracted-final-score-screen';
+  showScreen(activeScreen, 'distracted-game-screen', 500);
+  setTimeout(() => {
+    buildDistractedLevel(1);
+    startDistractedTimer();
+    startDistractedLoop();
+    sfx.startBgm();
+  }, 620);
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('button, .gbtn, [data-quit-logo]')) {
+    sfx.btnClick();
+  }
+});
+
+function calcDistractedScores() {
+  const currentLevelTimeTaken = Math.max(1, Math.round(D_LEVEL_CONFIGS[DG.level - 1].time - DG.timer));
+  const totalTimeTaken = DG.levelStats.reduce((sum, s) => sum + (s.timeTaken || 0), 0) + (DG.levelStats.length === 0 ? currentLevelTimeTaken : 0);
+  const totalHits = DG.levelStats.reduce((sum, s) => sum + (s.hits || 0), 0) + (DG.levelStats.length === 0 ? (DG.notificationHits || 0) : 0);
+  const totalBooks = DG.levelStats.reduce((sum, s) => sum + (s.books || 0), 0) + (DG.levelStats.length === 0 ? (DG.booksCollected || 0) : 0);
+  const totalTokens = DG.levelStats.reduce((sum, s) => sum + (s.tokens || 0), 0) + (DG.levelStats.length === 0 ? (DG.tokensCollected || 0) : 0);
+
+  // Distraction Score formula (0 - 100, lower is better):
+  // 1. Notification hits penalty: up to 50 pts (each hit ~7.5 pts)
+  const hitScore = Math.min(50, totalHits * 7.5);
+  // 2. Collection performance: missed items out of expected items
+  const totalCollected = totalBooks + totalTokens;
+  const missedScore = Math.max(0, 30 - Math.min(30, totalCollected * 3.5));
+  // 3. Time ratio penalty: up to 20 pts
+  const timeRatio = Math.min(1, totalTimeTaken / 135);
+  const timeScore = timeRatio * 20;
+
+  let distractionScore = Math.round(hitScore + missedScore + timeScore);
+  distractionScore = Math.max(0, Math.min(100, distractionScore));
+  const focusScore = Math.max(0, Math.min(100, 100 - distractionScore));
+
+  return {
+    distractionScore,
+    focusScore,
+    totalTimeTaken,
+    totalHits,
+    totalBooks,
+    totalTokens
+  };
+}
+
+function showDistractedFinalScore() {
+  DG.running = false;
+  if (DG.timerInterval) { clearInterval(DG.timerInterval); DG.timerInterval = null; }
+  if (DG.raf) { cancelAnimationFrame(DG.raf); DG.raf = null; }
+
+  const s = calcDistractedScores();
+  const ds = s.distractionScore !== undefined ? s.distractionScore : 25;
+  const fs = s.focusScore !== undefined ? s.focusScore : 75;
+
+  const lvlBadge = document.getElementById('distracted-fs-levels-badge');
+  const lvlText = document.getElementById('distracted-fs-levels');
+  const completed = DG.levelsCompleted || 0;
+  if (lvlText) lvlText.textContent = completed + ' / 3 LEVELS COMPLETED';
+  if (lvlBadge) {
+    lvlBadge.className = 'fs-levels-badge' + (completed === 3 ? '' : completed > 0 ? ' partial' : ' needs-work');
+  }
+
+  const titleEl = document.getElementById('distracted-fs-title');
+  if (completed === 3) {
+    if (titleEl) titleEl.textContent = 'FOCUS RESTORED';
+  } else if (completed > 0) {
+    if (titleEl) titleEl.textContent = 'PROGRESS MADE';
+  } else {
+    if (titleEl) titleEl.textContent = 'NEEDS IMPROVEMENT';
+  }
+
+  const otScore = document.getElementById('distracted-fs-ot-score');
+  if (otScore) otScore.innerHTML = ds + '<span class="fs-score-out"> / 100</span>';
+  const fcScore = document.getElementById('distracted-fs-fc-score');
+  if (fcScore) fcScore.innerHTML = fs + '<span class="fs-score-out"> / 100</span>';
+  const otBar = document.getElementById('distracted-fs-ot-bar');
+  if (otBar) otBar.style.width = ds + '%';
+  const fcBar = document.getElementById('distracted-fs-fc-bar');
+  if (fcBar) fcBar.style.width = fs + '%';
+
+  const otBadge = document.getElementById('distracted-fs-ot-badge');
+  const fcBadge = document.getElementById('distracted-fs-fc-badge');
+  const msgEl = document.getElementById('distracted-fs-message');
+  const quoteEl = document.getElementById('distracted-fs-quote');
+
+  if (ds <= 30) {
+    if (otBadge) { otBadge.textContent = '0–30 LOW DISTRACTION'; otBadge.className = 'fs-score-badge badge-ot-low'; }
+    if (fcBadge) { fcBadge.textContent = 'HIGH FOCUS'; fcBadge.className = 'fs-score-badge badge-fc-high'; }
+    if (msgEl) msgEl.textContent = 'Exemplary focus maintained! You navigated the campus while blocking out digital interruptions.';
+    if (quoteEl) quoteEl.textContent = '"Your attention is your most valuable asset."';
+  } else if (ds <= 60) {
+    if (otBadge) { otBadge.textContent = '31–60 MODERATE'; otBadge.className = 'fs-score-badge badge-ot-mod'; }
+    if (fcBadge) { fcBadge.textContent = 'STEADY FOCUS'; fcBadge.className = 'fs-score-badge badge-fc-med'; }
+    if (msgEl) msgEl.textContent = 'Solid performance despite notification noise. Focus intervals will keep you grounded.';
+    if (quoteEl) quoteEl.textContent = '"Single-tasking is the key to deep learning."';
+  } else {
+    if (otBadge) { otBadge.textContent = '61–100 HIGH'; otBadge.className = 'fs-score-badge badge-ot-high'; }
+    if (fcBadge) { fcBadge.textContent = 'NEEDS FOCUS'; fcBadge.className = 'fs-score-badge badge-fc-mod'; }
+    if (msgEl) msgEl.textContent = 'Frequent notifications interrupted your study run. Try putting your phone in another room during study blocks.';
+    if (quoteEl) quoteEl.textContent = '"Silence the pings to discover clarity."';
+  }
+
+  const timeEl = document.getElementById('distracted-fs-time');
+  if (timeEl) timeEl.textContent = (s.totalTimeTaken || 0) + 's';
+  const hitsEl = document.getElementById('distracted-fs-hits');
+  if (hitsEl) hitsEl.textContent = s.totalHits || 0;
+  const booksEl = document.getElementById('distracted-fs-books');
+  if (booksEl) booksEl.textContent = s.totalBooks || 0;
+  const tokensEl = document.getElementById('distracted-fs-tokens');
+  if (tokensEl) tokensEl.textContent = s.totalTokens || 0;
+
+  const activeScreen = document.querySelector('.screen.active') ? document.querySelector('.screen.active').id : 'distracted-game-screen';
+  showScreen(activeScreen, 'distracted-final-score-screen', 450);
+}
+
+function openDistractedGuidanceScreen() {
+  showScreen('distracted-final-score-screen', 'distracted-guidance-screen', 400);
+}
+
+
+
+// Auto-start when ?start=1 is present
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.search.includes('start=1') || window.location.hash === '#play') {
+    startDistractedGame();
+  }
+});
+
+</script>
+</body>
+</html>

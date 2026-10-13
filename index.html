@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>RE:SET — What's Your Mindset Today?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+/* ===== DESIGN SYSTEM & RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #152B4A;
+  --navy-dark: #0E1D42;
+  --teal: #2ECDA6;
+  --teal-dark: #24A888;
+  --orange: #E87830;
+  --yellow: #FFCA28;
+  --blue: #2196F3;
+  --green: #00C853;
+  --red: #E53935;
+  --bg: #FFFFFF;
+  --text-primary: #152B4A;
+  --text-secondary: rgba(21, 43, 74, 0.65);
+  --border-light: rgba(21, 43, 74, 0.12);
+  --border-med: rgba(21, 43, 74, 0.2);
+  --shadow-sm: 0 2px 6px rgba(21, 43, 74, 0.05);
+  --shadow-md: 0 6px 20px rgba(21, 43, 74, 0.08);
+  --shadow-lg: 0 14px 40px rgba(21, 43, 74, 0.12);
+  --shadow-teal: 0 4px 20px rgba(46, 205, 166, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
+  color: var(--text-primary);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Grid pattern background */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right, rgba(33,150,243,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(33,150,243,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Pixel floating decor */
+#pixel-decor {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.pix {
+  position: absolute; border-radius: 2px; opacity: 0;
+  animation: pixFloat 22s ease-in-out infinite;
+}
+@keyframes pixFloat {
+  0%, 100% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  20% { opacity: 0.4; }
+  50% { opacity: 0.3; transform: translateY(-28px) rotate(45deg); }
+  80% { opacity: 0.4; }
+}
+
+/* Screen container system */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  padding: clamp(16px, 4vw, 32px) clamp(16px, 4vw, 24px);
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+.screen.active { display: flex; }
+.screen.fade-in { animation: screenIn 0.35s ease forwards; }
+@keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Shared Button System */
+.gbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+  text-decoration: none;
+}
+.gbtn:active { transform: scale(0.97); }
+.gbtn-navy {
+  background: var(--navy-dark);
+  color: #ffffff;
+  border-color: var(--navy-dark);
+}
+.gbtn-navy:hover {
+  background: var(--navy);
+  border-color: var(--navy);
+  box-shadow: var(--shadow-md);
+}
+.gbtn-teal {
+  background: var(--teal);
+  color: var(--navy-dark);
+  border-color: var(--teal);
+}
+.gbtn-teal:hover {
+  background: var(--teal-dark);
+  border-color: var(--teal-dark);
+  box-shadow: var(--shadow-teal);
+}
+.gbtn-outline {
+  background: transparent;
+  color: var(--navy-dark);
+  border-color: var(--border-med);
+}
+.gbtn-outline:hover {
+  background: rgba(21, 43, 74, 0.04);
+  border-color: var(--navy-dark);
+}
+.gbtn-back-link {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-top: 14px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.gbtn-back-link:hover { color: var(--navy); background: rgba(21,43,74,0.05); }
+
+/* Transition Overlay */
+#transition-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+#transition-overlay.active { opacity: 1; pointer-events: all; }
+
+/* Corner decors */
+.corner-decor { position: absolute; z-index: 0; opacity: 0.25; pointer-events: none; }
+.corner-decor.tl { top: 16px; left: 16px; }
+.corner-decor.tr { top: 16px; right: 16px; }
+.corner-decor.bl { bottom: 16px; left: 16px; }
+.corner-decor.br { bottom: 16px; right: 16px; }
+
+/* ===================================================
+   SCREEN 1: WELCOME SCREEN
+   =================================================== */
+#welcome-screen { text-align: center; }
+.welcome-container {
+  display: flex; flex-direction: column; align-items: center;
+  max-width: 580px; width: 100%;
+}
+.welcome-logo {
+  margin-bottom: 22px;
+  display: flex; justify-content: center;
+}
+.welcome-logo img {
+  height: clamp(120px, 25vw, 175px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(21, 43, 74, 0.1));
+}
+.welcome-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.8rem, 5.5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: var(--navy);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.welcome-subtitle {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 440px;
+}
+.welcome-container .gbtn-navy {
+  padding: 14px 48px;
+  font-size: 1rem;
+  letter-spacing: 3px;
+}
+
+/* Sound toggle button */
+.sound-toggle-btn {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sound-toggle-btn:hover { transform: scale(1.08); background: #f8fafc; }
+.sound-toggle-btn:active { transform: scale(0.95); }
+
+/* ===================================================
+   SCREEN 2: ABOUT RE:SET SCREEN
+   =================================================== */
+#about-screen { text-align: center; }
+.about-wrap {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.about-logo {
+  margin-bottom: 16px;
+  display: flex; justify-content: center;
+}
+.about-logo img {
+  height: clamp(72px, 14vw, 100px);
+  width: auto;
+  object-fit: contain;
+}
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 50px;
+  background: rgba(46, 205, 166, 0.12);
+  border: 1px solid var(--teal);
+  color: var(--navy-dark);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.about-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 14px;
+}
+.about-card {
+  background: #ffffff;
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  padding: clamp(20px, 4vw, 32px);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  text-align: left;
+}
+.about-text {
+  font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+  line-height: 1.7;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+.about-pillars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+.about-pillar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.about-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 440px;
+  align-items: stretch;
+}
+.about-actions .gbtn { width: 100%; }
+
+/* About details toggle modal */
+.about-details-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(14, 29, 66, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 16px;
+}
+.about-details-modal.show { display: flex; }
+.about-modal-card {
+  background: #fff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  max-width: 580px; width: 100%;
+  max-height: 90vh; max-height: 90dvh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 24px 28px;
+  text-align: left;
+}
+.about-modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem; font-weight: 700;
+  color: var(--navy); margin-bottom: 10px;
+}
+.about-modal-body p {
+  font-size: 0.9rem; line-height: 1.6;
+  color: var(--text-secondary); margin-bottom: 12px;
+}
+
+/* ===================================================
+   SCREEN 3: CHOOSE YOUR PERSONA SCREEN
+   =================================================== */
+#selection-screen {
+  padding-top: clamp(16px, 3vw, 24px);
+  padding-bottom: clamp(20px, 3vw, 32px);
+  justify-content: flex-start;
+}
+.sel-wrap {
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sel-header {
+  text-align: center;
+  margin-bottom: clamp(16px, 3vw, 24px);
+}
+.sel-logo {
+  margin-bottom: 10px;
+  display: flex; justify-content: center;
+}
+.sel-logo img {
+  height: clamp(68px, 13vw, 95px);
+  width: auto;
+  object-fit: contain;
+}
+.sel-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.sel-sub {
+  font-size: clamp(0.85rem, 2vw, 0.96rem);
+  color: var(--text-secondary);
+}
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 2.5vw, 20px);
+  width: 100%;
+  margin-bottom: 16px;
+}
+.char-card {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  padding: clamp(14px, 3vw, 20px) 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.char-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--teal);
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--teal);
+}
+.char-card:active { transform: scale(0.98); }
+.char-top-accent {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 40%; height: 3px; border-radius: 0 0 3px 3px;
+  transition: width 0.3s ease;
+}
+.char-card:hover .char-top-accent { width: 70%; }
+.char-img-wrap {
+  width: 100%;
+  height: clamp(120px, 22vw, 170px);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.char-img-wrap img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(21, 43, 74, 0.12));
+  transition: transform 0.3s ease;
+}
+.char-card:hover .char-img-wrap img { transform: scale(1.05); }
+.char-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.char-underline {
+  width: 24px; height: 2px;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.char-card:hover .char-underline { width: 44px; }
+.char-tap-hint {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* ===================================================
+   SCREEN 4: CHARACTER DESCRIPTION SCREEN
+   =================================================== */
+#description-screen { text-align: center; }
+.desc-wrap {
+  width: 100%;
+  max-width: 640px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.desc-logo {
+  margin-bottom: 14px;
+  display: flex; justify-content: center;
+}
+.desc-logo img {
+  height: clamp(65px, 12vw, 90px);
+  width: auto; object-fit: contain;
+}
+.desc-card {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 32px);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.desc-char-img-wrap {
+  height: clamp(130px, 26vw, 180px);
+  margin-bottom: 16px;
+}
+.desc-char-img-wrap img {
+  max-height: 100%; width: auto; object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(21, 43, 74, 0.15));
+}
+.desc-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.desc-char-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.4rem, 4.5vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 14px;
+}
+/* Exactly two short lines of descriptive text */
+.desc-two-lines {
+  background: #f8fafc;
+  border-left: 4px solid var(--teal);
+  border-radius: 6px;
+  padding: 14px 16px;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+.desc-line-1 {
+  font-size: clamp(0.88rem, 2.3vw, 0.98rem);
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.desc-line-2 {
+  font-size: clamp(0.84rem, 2.1vw, 0.92rem);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.desc-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+.desc-actions .gbtn { flex: 1; }
+
+/* ===================================================
+   SCREEN 5: SHORT GAME INSTRUCTIONS SCREEN
+   =================================================== */
+#instructions-screen { text-align: center; }
+.instr-screen-wrap {
+  width: 100%;
+  max-width: 680px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.instr-screen-logo {
+  margin-bottom: 12px;
+  display: flex; justify-content: center;
+}
+.instr-screen-logo img {
+  height: clamp(65px, 12vw, 90px);
+  width: auto; object-fit: contain;
+}
+.instr-screen-card {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid var(--border-med);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 18px;
+}
+.instr-screen-head {
+  background: var(--navy-dark);
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.instr-head-avatar img {
+  height: 52px; width: auto; object-fit: contain;
+}
+.instr-head-info { flex: 1; }
+.instr-head-tag {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 2px;
+}
+.instr-head-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+  font-weight: 700; letter-spacing: 1.5px;
+  color: #ffffff; line-height: 1.2;
+}
+.instr-screen-body {
+  padding: 18px 20px;
+  text-align: left;
+}
+.instr-tri-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.instr-tri-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.instr-tri-lbl {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.64rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 4px;
+  display: flex; align-items: center; gap: 4px;
+}
+.instr-tri-val {
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--navy); line-height: 1.4;
+}
+.instr-levels-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.instr-screen-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+.instr-screen-actions .gbtn { flex: 1; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .screen {
+    padding: clamp(10px, 2.5vh, 18px) 14px;
+    justify-content: center;
+  }
+  .characters-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .char-card {
+    padding: 10px 8px;
+  }
+  .char-img-wrap { height: 90px; margin-bottom: 6px; }
+  .char-name { font-size: 0.76rem; margin-bottom: 4px; }
+  .char-tap-hint { display: none; }
+  .instr-tri-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .instr-tri-card { padding: 8px 10px; }
+  .instr-screen-body { padding: 12px 14px; }
+  .instr-screen-card { margin-bottom: 12px; }
+  .about-card { padding: 14px 16px; margin-bottom: 14px; }
+  .about-pillars { grid-template-columns: 1fr; gap: 6px; }
+  .about-pillar-item { padding: 6px 10px; }
+  .desc-card { padding: 14px 16px; margin-bottom: 12px; }
+  .desc-char-img-wrap { height: 105px; margin-bottom: 10px; }
+  .desc-actions, .instr-screen-actions { flex-direction: column; gap: 8px; }
+  .desc-actions .gbtn, .instr-screen-actions .gbtn { width: 100%; min-height: 42px; padding: 10px 18px; }
+}
+@media (max-height: 600px) {
+  .screen {
+    padding: 8px 14px;
+  }
+  .welcome-logo img { height: 90px; }
+  .about-logo img, .sel-logo img, .desc-logo img, .instr-screen-logo img { height: 50px; margin-bottom: 6px; }
+  .characters-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .char-img-wrap { height: 70px; margin-bottom: 4px; }
+  .char-card { padding: 6px 4px; }
+  .char-name { font-size: 0.68rem; }
+  .desc-card { padding: 10px 14px; margin-bottom: 8px; }
+  .desc-char-img-wrap { height: 75px; margin-bottom: 6px; }
+  .instr-screen-card { margin-bottom: 8px; }
+  .instr-screen-body { padding: 8px 12px; }
+  .instr-tri-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+}
+</style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div id="pixel-decor"></div>
+  <div id="transition-overlay"></div>
+  <button type="button" class="sound-toggle-btn" onclick="sfx.toggleMute()" aria-label="Toggle sound" title="Sound On (tap to mute)">🔊</button>
+
+  <!-- Corner decor SVGs -->
+  <div class="corner-decor tl"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect width="8" height="8" fill="#152B4A" opacity=".4"/><rect x="12" width="6" height="6" fill="#2ECDA6" opacity=".5"/><rect y="12" width="6" height="6" fill="#2196F3" opacity=".4"/></svg></div>
+  <div class="corner-decor tr"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="40" width="8" height="8" fill="#E87830" opacity=".4"/><rect x="30" y="4" width="6" height="6" fill="#2ECDA6" opacity=".5"/><rect x="40" y="12" width="6" height="6" fill="#152B4A" opacity=".4"/></svg></div>
+  <div class="corner-decor bl"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect y="40" width="8" height="8" fill="#2196F3" opacity=".4"/><rect x="12" y="38" width="6" height="6" fill="#FFCA28" opacity=".5"/><rect y="28" width="6" height="6" fill="#2ECDA6" opacity=".4"/></svg></div>
+  <div class="corner-decor br"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="40" y="40" width="8" height="8" fill="#152B4A" opacity=".4"/><rect x="30" y="42" width="6" height="6" fill="#E87830" opacity=".4"/><rect x="42" y="30" width="6" height="6" fill="#2ECDA6" opacity=".4"/></svg></div>
+
+  <!-- ==============================================
+       SCREEN 1: WELCOME
+       ============================================== -->
+  <div class="screen active fade-in" id="welcome-screen">
+    <div class="welcome-container">
+      <div class="welcome-logo">
+        <img src="logo-blue-outline.png" alt="RE:SET Logo">
+      </div>
+      <h1 class="welcome-title">WELCOME TO RE:SET</h1>
+      <p class="welcome-subtitle">Reset your attention. Challenge your mindset.</p>
+      <button class="gbtn gbtn-navy" onclick="goToAbout()">ENTER →</button>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SCREEN 2: ABOUT RE:SET
+       ============================================== -->
+  <div class="screen" id="about-screen">
+    <div class="about-wrap">
+      <div class="about-logo">
+        <img src="logo-blue-outline.png" alt="RE:SET Logo">
+      </div>
+      <div class="about-badge">University Student Wellness</div>
+      <h2 class="about-title">ABOUT RE:SET</h2>
+      <div class="about-card">
+        <p class="about-text">
+          <strong>RE:SET</strong> helps university students recognize digital distractions, understand procrastination, and develop better focus through interactive games.
+        </p>
+        <p class="about-text" style="color:var(--text-secondary);font-size:0.92rem;">
+          Identify your daily attention habits across four psychological personas and train your cognitive control through fast, focused mini-games.
+        </p>
+        <div class="about-pillars">
+          <div class="about-pillar-item"><span style="color:var(--blue);">🌀</span> The Overthinker</div>
+          <div class="about-pillar-item"><span style="color:var(--orange);">⏳</span> The Procrastinator</div>
+          <div class="about-pillar-item"><span style="color:var(--teal);">🔔</span> The Distracted</div>
+          <div class="about-pillar-item"><span style="color:var(--green);">🎯</span> The Focused One</div>
+        </div>
+      </div>
+      <div class="about-actions">
+        <button class="gbtn gbtn-teal" onclick="goToSelection()">PLAY RE:SET / CHOOSE YOUR PERSONA →</button>
+        <button class="gbtn gbtn-outline" onclick="toggleAboutDetails()">ABOUT RE:SET — PROJECT DETAILS</button>
+      </div>
+      <button class="gbtn-back-link" onclick="goToWelcome()">← Back to Welcome</button>
+    </div>
+  </div>
+
+  <!-- Project Details Modal (Toggle from Screen 2) -->
+  <div class="about-details-modal" id="about-details-modal" role="dialog" aria-modal="true" onclick="if(event.target===this) toggleAboutDetails()">
+    <div class="about-modal-card">
+      <h3 class="about-modal-title">Why RE:SET Matters for Students</h3>
+      <div class="about-modal-body">
+        <p>University life requires sustained deep work, yet constant digital notifications, academic perfectionism, and deadline anxiety create cognitive fatigue.</p>
+        <p><strong>The Mission:</strong> Rather than lecturing students, RE:SET turns self-awareness into experiential gameplay. Each 3-level game challenges a specific executive dysfunction pattern.</p>
+        <p><strong>Evidence-Based Reflection:</strong> At the end of every run, players receive concrete, actionable micro-habits designed specifically for campus schedules.</p>
+      </div>
+      <button class="gbtn gbtn-navy" style="width:100%;" onclick="toggleAboutDetails()">Close Details</button>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SCREEN 3: CHOOSE YOUR PERSONA
+       ============================================== -->
+  <div class="screen" id="selection-screen">
+    <div class="sel-wrap">
+      <header class="sel-header">
+        <div class="sel-logo">
+          <img src="logo-blue-outline.png" alt="RE:SET Logo">
+        </div>
+        <h2 class="sel-title">CHOOSE YOUR PERSONA</h2>
+        <p class="sel-sub">Choose the mindset you want to challenge today.</p>
+      </header>
+
+      <section class="characters-grid">
+        <!-- The Overthinker -->
+        <div class="char-card" data-char="overthinker" onclick="selectPersona('overthinker')">
+          <div class="char-top-accent" style="background:var(--blue);"></div>
+          <div class="char-img-wrap"><img src="overthinker.png" alt="The Overthinker"></div>
+          <span class="char-name">The Overthinker</span>
+          <div class="char-underline" style="background:var(--blue);"></div>
+          <span class="char-tap-hint">Select Persona →</span>
+        </div>
+
+        <!-- The Procrastinator -->
+        <div class="char-card" data-char="procrastinator" onclick="selectPersona('procrastinator')">
+          <div class="char-top-accent" style="background:var(--orange);"></div>
+          <div class="char-img-wrap"><img src="procrastinator.png" alt="The Procrastinator"></div>
+          <span class="char-name">The Procrastinator</span>
+          <div class="char-underline" style="background:var(--orange);"></div>
+          <span class="char-tap-hint">Select Persona →</span>
+        </div>
+
+        <!-- The Distracted -->
+        <div class="char-card" data-char="distracted" onclick="selectPersona('distracted')">
+          <div class="char-top-accent" style="background:var(--teal);"></div>
+          <div class="char-img-wrap"><img src="distracted.png" alt="The Distracted"></div>
+          <span class="char-name">The Distracted</span>
+          <div class="char-underline" style="background:var(--teal);"></div>
+          <span class="char-tap-hint">Select Persona →</span>
+        </div>
+
+        <!-- The Focused One -->
+        <div class="char-card" data-char="focused" onclick="selectPersona('focused')">
+          <div class="char-top-accent" style="background:var(--green);"></div>
+          <div class="char-img-wrap"><img src="focused.png" alt="The Focused One"></div>
+          <span class="char-name">The Focused One</span>
+          <div class="char-underline" style="background:var(--green);"></div>
+          <span class="char-tap-hint">Select Persona →</span>
+        </div>
+      </section>
+
+      <button class="gbtn-back-link" onclick="goToAbout()">← Back to About RE:SET</button>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SCREEN 4: CHARACTER DESCRIPTION
+       ============================================== -->
+  <div class="screen" id="description-screen">
+    <div class="desc-wrap">
+      <div class="desc-logo">
+        <img src="logo-blue-outline.png" alt="RE:SET Logo">
+      </div>
+      <div class="desc-card">
+        <div class="desc-char-img-wrap">
+          <img id="desc-char-img" src="overthinker.png" alt="Selected Character">
+        </div>
+        <div class="desc-badge" id="desc-badge" style="background:rgba(33,150,243,0.12);color:var(--blue);">MINDSET PROFILE</div>
+        <h2 class="desc-char-title" id="desc-char-name">THE OVERTHINKER</h2>
+
+        <!-- Exactly TWO short lines of descriptive text -->
+        <div class="desc-two-lines" id="desc-two-lines">
+          <p class="desc-line-1" id="desc-line-1">Trapped in endless loops of what-ifs and second-guessing every choice.</p>
+          <p class="desc-line-2" id="desc-line-2">Navigate maze paths, take decisive steps, and momentum to break the cycle.</p>
+        </div>
+      </div>
+
+      <div class="desc-actions">
+        <button class="gbtn gbtn-outline" onclick="goToSelection()">← Back to Personas</button>
+        <button class="gbtn gbtn-teal" onclick="goToInstructions()">Continue to Instructions →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SCREEN 5: SHORT GAME INSTRUCTIONS
+       ============================================== -->
+  <div class="screen" id="instructions-screen">
+    <div class="instr-screen-wrap">
+      <div class="instr-screen-logo">
+        <img src="logo-blue-outline.png" alt="RE:SET Logo">
+      </div>
+      <div class="instr-screen-card">
+        <div class="instr-screen-head">
+          <div class="instr-head-avatar">
+            <img id="instr-avatar" src="overthinker.png" alt="Character">
+          </div>
+          <div class="instr-head-info">
+            <div class="instr-head-tag" id="instr-tag">QUICK INSTRUCTIONS</div>
+            <h2 class="instr-head-title" id="instr-title">ESCAPE THE LOOP</h2>
+          </div>
+        </div>
+        <div class="instr-screen-body">
+          <div class="instr-tri-grid">
+            <div class="instr-tri-card">
+              <div class="instr-tri-lbl">🎯 Objective</div>
+              <div class="instr-tri-val" id="instr-objective">Navigate the maze and reach the exit before the loop timer expires.</div>
+            </div>
+            <div class="instr-tri-card">
+              <div class="instr-tri-lbl">🎮 Controls</div>
+              <div class="instr-tri-val" id="instr-controls">Swipe on mobile or use Arrow keys / WASD on keyboard.</div>
+            </div>
+            <div class="instr-tri-card">
+              <div class="instr-tri-lbl">🏆 Win Condition</div>
+              <div class="instr-tri-val" id="instr-win">Clear all 3 levels (60s, 45s, 30s) within 2 attempts per level.</div>
+            </div>
+          </div>
+          <div class="instr-levels-ribbon" id="instr-levels-ribbon">
+            <span>Level 1: 60s</span>
+            <span>·</span>
+            <span>Level 2: 45s</span>
+            <span>·</span>
+            <span>Level 3: 30s</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="instr-screen-actions">
+        <button class="gbtn gbtn-outline" onclick="goToDescription()">← Back</button>
+        <button class="gbtn gbtn-navy" onclick="launchSelectedGame()">PLAY GAME →</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ==============================================
+   AUDIO SYNTHESIS & SFX ENGINE
+   ============================================== */
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.muted = localStorage.getItem('reset_sound_muted') === 'true';
+    document.addEventListener('DOMContentLoaded', () => this.updateMuteButtons());
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+  setMuted(m) {
+    this.muted = m;
+    try { localStorage.setItem('reset_sound_muted', m ? 'true' : 'false'); } catch (e) {}
+    this.updateMuteButtons();
+  }
+  toggleMute() {
+    this.init();
+    this.setMuted(!this.muted);
+    if (!this.muted) this.point();
+    return this.muted;
+  }
+  updateMuteButtons() {
+    document.querySelectorAll('.sound-toggle-btn').forEach(btn => {
+      btn.textContent = this.muted ? '🔇' : '🔊';
+      btn.setAttribute('aria-label', this.muted ? 'Unmute game sounds' : 'Mute game sounds');
+      btn.title = this.muted ? 'Sound Muted (tap to unmute)' : 'Sound On (tap to mute)';
+    });
+  }
+  playTone(freq, type = 'sine', duration = 0.15, vol = 0.12) {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch(e) {}
+  }
+  btnClick() { this.playTone(480, 'sine', 0.06, 0.06); }
+  step() { this.playTone(240 + Math.random() * 30, 'triangle', 0.04, 0.03); }
+  point() {
+    if (this.muted) return;
+    this.playTone(660, 'sine', 0.09, 0.08);
+    setTimeout(() => this.playTone(880, 'sine', 0.14, 0.09), 60);
+  }
+  collect() { this.point(); }
+  hit() {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.16);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.16);
+    } catch(e) {}
+  }
+  damage() { this.hit(); }
+  warn() { this.hit(); }
+  positive() {
+    if (this.muted) return;
+    [523.25, 659.25, 783.99].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.18, 0.08), i * 70);
+    });
+  }
+  win() {
+    if (this.muted) return;
+    [440, 554.37, 659.25, 880].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'triangle', 0.22, 0.09), i * 90);
+    });
+  }
+  lose() {
+    if (this.muted) return;
+    [370, 330, 294, 220].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.22, 0.08), i * 110);
+    });
+  }
+}
+const sfx = new SoundEngine();
+
+/* Pixel background decor */
+function createPixelDecor() {
+  const c = document.getElementById('pixel-decor');
+  if (!c) return;
+  const cols = ['#152B4A','#2ECDA6','#2196F3','#E87830','#FFCA28','#00C853'];
+  const n = window.innerWidth < 640 ? 12 : 24;
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div');
+    p.className = 'pix';
+    const s = Math.random() * 6 + 3;
+    Object.assign(p.style, {
+      width: s + 'px',
+      height: s + 'px',
+      left: (Math.random() * 96 + 2) + '%',
+      top: (Math.random() * 96 + 2) + '%',
+      background: cols[Math.floor(Math.random() * cols.length)],
+      animationDelay: (Math.random() * 18) + 's',
+      animationDuration: (Math.random() * 10 + 16) + 's'
+    });
+    c.appendChild(p);
+  }
+}
+createPixelDecor();
+
+/* Screen transition manager */
+
+/* History navigation for 5-screen workflow */
+let screenHistory = ['welcome-screen'];
+
+function pushScreenHistory(screenId) {
+  if (screenHistory[screenHistory.length - 1] !== screenId) {
+    screenHistory.push(screenId);
+    try {
+      history.pushState({ screen: screenId }, '', '#' + screenId.replace('-screen', ''));
+    } catch(e) {}
+  }
+}
+
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.screen) {
+    const target = e.state.screen;
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'fade-in'));
+    const el = document.getElementById(target);
+    if (el) el.classList.add('active', 'fade-in');
+    screenHistory.pop();
+  } else if (screenHistory.length > 1) {
+    screenHistory.pop();
+    const prev = screenHistory[screenHistory.length - 1];
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'fade-in'));
+    const el = document.getElementById(prev);
+    if (el) el.classList.add('active', 'fade-in');
+  }
+});
+
+function switchScreen(hideId, showId) {
+  pushScreenHistory(showId);
+  const ov = document.getElementById('transition-overlay');
+  if (ov) ov.classList.add('active');
+  setTimeout(() => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'fade-in'));
+    const target = document.getElementById(showId);
+    if (target) {
+      target.classList.add('active', 'fade-in');
+      window.scrollTo(0, 0);
+    }
+    if (ov) setTimeout(() => ov.classList.remove('active'), 180);
+  }, 220);
+}
+
+/* ==============================================
+   PERSONA DATA & EXACT TWO-LINE DESCRIPTIONS
+   ============================================== */
+const personas = {
+  overthinker: {
+    key: 'overthinker',
+    name: 'THE OVERTHINKER',
+    img: 'overthinker.png',
+    page: 'overthinker.html',
+    color: '#2196F3',
+    gameTitle: 'ESCAPE THE LOOP',
+    line1: 'Trapped in endless loops of what-ifs and second-guessing every choice.',
+    line2: 'Navigate maze paths, take decisive steps, and momentum to break the cycle.',
+    objective: 'Navigate the maze routes and reach the exit before your loop timer runs out.',
+    controls: 'Swipe in any direction on mobile or use Arrow keys / WASD on keyboard.',
+    winCondition: 'Clear all 3 levels (60s, 45s, 30s) within 2 attempts per level.',
+    levels: 'Level 1: 60s (Recognize) · Level 2: 45s (Challenge) · Level 3: 30s (Overcome)'
+  },
+  procrastinator: {
+    key: 'procrastinator',
+    name: 'THE PROCRASTINATOR',
+    img: 'procrastinator.png',
+    page: 'procrastinator.html',
+    color: '#E87830',
+    gameTitle: 'TASK RESCUE — BEAT THE DEADLINE',
+    line1: 'Knows what to do, but delays until coursework deadlines create intense pressure.',
+    line2: 'Move and catch falling study tasks before deadlines overwhelm you.',
+    objective: 'Catch falling coursework assignments, books, and checklists before time expires.',
+    controls: 'Drag left & right on mobile or use Left/Right Arrows / A-D keys.',
+    winCondition: 'Rescue task quotas across all 3 levels (60s, 45s, 30s) without losing all lives.',
+    levels: 'Level 1: 60s (Rescue 8) · Level 2: 45s (Rescue 10) · Level 3: 30s (Rescue 12)'
+  },
+  distracted: {
+    key: 'distracted',
+    name: 'THE DISTRACTED',
+    img: 'distracted.png',
+    page: 'distracted.html',
+    color: '#2ECDA6',
+    gameTitle: 'FOCUS RUN',
+    line1: 'Pulled in every direction by pop-up alerts, open tabs, and digital noise.',
+    line2: 'Sprint across campus, leap over notifications, and reach the focused study zone.',
+    objective: 'Run across campus corridors and jump over distraction pop-ups to the Study Zone.',
+    controls: 'Tap anywhere on mobile to jump or press Spacebar / Up Arrow on keyboard.',
+    winCondition: 'Reach the end of the course across 3 levels (60s, 45s, 30s) with 2 attempts.',
+    levels: 'Level 1: 60s (Basic Jumps) · Level 2: 45s (Moving Alerts) · Level 3: 30s (Dense Obstacles)'
+  },
+  focused: {
+    key: 'focused',
+    name: 'THE FOCUSED ONE',
+    img: 'focused.png',
+    page: 'focused.html',
+    color: '#00C853',
+    gameTitle: 'FOCUS GRID',
+    line1: 'Locked in and striving for sustained single-tasking flow and deep stamina.',
+    line2: 'Memorize illuminated grid patterns and defend attention against peripheral blips.',
+    objective: 'Watch the illuminated sequence, then repeat the pattern in exact order.',
+    controls: 'Tap illuminated cells in order on mobile or click with mouse on desktop.',
+    winCondition: 'Complete all rounds across 3 grid levels (3×3, 4×4, 4×4) while holding shields.',
+    levels: 'Level 1: 3×3 Grid (3 Rounds) · Level 2: 4×4 Grid (3 Rounds) · Level 3: 4×4 Grid (4 Rounds)'
+  }
+};
+
+let currentPersona = 'overthinker';
+
+/* Workflow Navigation */
+function goToWelcome() {
+  sfx.btnClick();
+  switchScreen(getActiveScreenId(), 'welcome-screen');
+}
+
+function goToAbout() {
+  sfx.btnClick();
+  switchScreen('welcome-screen', 'about-screen');
+}
+
+function toggleAboutDetails() {
+  sfx.btnClick();
+  const m = document.getElementById('about-details-modal');
+  if (m) m.classList.toggle('show');
+}
+
+function goToSelection() {
+  sfx.btnClick();
+  switchScreen(getActiveScreenId(), 'selection-screen');
+}
+
+function selectPersona(key) {
+  sfx.step();
+  currentPersona = key;
+  const p = personas[key];
+  if (!p) return;
+
+  // Populate Screen 4 (Character Description)
+  const descImg = document.getElementById('desc-char-img');
+  descImg.src = p.img;
+  descImg.alt = p.name;
+  document.getElementById('desc-char-name').textContent = p.name;
+  const badge = document.getElementById('desc-badge');
+  badge.style.color = p.color;
+  badge.style.background = p.color + '1a';
+  document.getElementById('desc-two-lines').style.borderLeftColor = p.color;
+  document.getElementById('desc-line-1').textContent = p.line1;
+  document.getElementById('desc-line-2').textContent = p.line2;
+
+  // Populate Screen 5 (Short Instructions)
+  const instrAvatar = document.getElementById('instr-avatar');
+  instrAvatar.src = p.img;
+  instrAvatar.alt = p.name;
+  document.getElementById('instr-title').textContent = p.gameTitle;
+  document.getElementById('instr-tag').style.color = p.color;
+  document.getElementById('instr-objective').textContent = p.objective;
+  document.getElementById('instr-controls').textContent = p.controls;
+  document.getElementById('instr-win').textContent = p.winCondition;
+  document.getElementById('instr-levels-ribbon').innerHTML = p.levels.split('·').map(s => `<span>${s.trim()}</span>`).join(' · ');
+
+  // Proceed directly to Screen 4
+  switchScreen('selection-screen', 'description-screen');
+}
+
+function goToInstructions() {
+  sfx.btnClick();
+  switchScreen('description-screen', 'instructions-screen');
+}
+
+function goToDescription() {
+  sfx.btnClick();
+  switchScreen('instructions-screen', 'description-screen');
+}
+
+function launchSelectedGame() {
+  sfx.collect();
+  const p = personas[currentPersona];
+  if (p && p.page) {
+    const ov = document.getElementById('transition-overlay');
+    if (ov) ov.classList.add('active');
+    setTimeout(() => {
+      // Start level 1 immediately in the selected game
+      window.location.href = p.page + '?start=1';
+    }, 280);
+  }
+}
+
+function getActiveScreenId() {
+  const active = document.querySelector('.screen.active');
+  return active ? active.id : 'welcome-screen';
+}
+
+// Return from game via hash (e.g. index.html#selection)
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash === '#selection') {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'fade-in'));
+    const sel = document.getElementById('selection-screen');
+    if (sel) sel.classList.add('active', 'fade-in');
+  }
+});
+
+// Keyboard accessibility
+document.addEventListener('keydown', e => {
+  const active = getActiveScreenId();
+  if (active === 'welcome-screen' && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    goToAbout();
+  } else if (active === 'selection-screen') {
+    const map = { '1': 'overthinker', '2': 'procrastinator', '3': 'distracted', '4': 'focused' };
+    if (map[e.key]) selectPersona(map[e.key]);
+  } else if (active === 'description-screen' && e.key === 'Enter') {
+    goToInstructions();
+  } else if (active === 'instructions-screen' && e.key === 'Enter') {
+    launchSelectedGame();
+  } else if (e.key === 'Escape') {
+    const modal = document.getElementById('about-details-modal');
+    if (modal && modal.classList.contains('show')) {
+      toggleAboutDetails();
+    }
+  }
+});
+</script>
+</body>
+</html>
